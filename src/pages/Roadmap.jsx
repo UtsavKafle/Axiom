@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 
 const PHASES = [
   {
@@ -53,8 +54,19 @@ const completedCount = PHASES.flatMap(p => p.nodes).filter(n => n.status === 'co
 const totalCount = PHASES.flatMap(p => p.nodes).length
 
 export default function Roadmap() {
+  const { user, profile } = useAuth()
   const [selectedNode, setSelectedNode] = useState(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+
+  const displayName = profile?.name || user?.email?.split('@')[0] || 'User'
+  const nameParts = displayName.trim().split(' ')
+  const shortName = nameParts.length > 1
+    ? `${nameParts[0]} ${nameParts[nameParts.length - 1][0]}.`
+    : nameParts[0]
+  const initial = displayName[0]?.toUpperCase() || 'U'
+  const yearLabel = profile?.year || 'CS Student'
+  const goalLabel = profile?.goal || '—'
+  const interestsLabel = profile?.interests || '—'
 
   function openNode(node) {
     setSelectedNode(node)
@@ -84,17 +96,16 @@ export default function Roadmap() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '16px', fontWeight: '700', color: '#fff',
               border: '2px solid rgba(67,97,238,0.4)',
-            }}>U</div>
+            }}>{initial}</div>
             <div>
-              <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '14px', color: '#e2e8f0' }}>Utsav K.</div>
-              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '10px', color: '#4361ee' }}>CS Junior</div>
+              <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '14px', color: '#e2e8f0' }}>{shortName}</div>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '10px', color: '#4361ee' }}>{yearLabel}</div>
             </div>
           </div>
           {[
-            { label: 'Year', value: 'Junior (3rd)' },
-            { label: 'Target', value: 'SWE @ FAANG' },
-            { label: 'Stack', value: 'React · Python · Go' },
-            { label: 'GPA', value: '3.8 / 4.0' },
+            { label: 'Year', value: yearLabel },
+            { label: 'Target', value: goalLabel },
+            { label: 'Interests', value: interestsLabel },
           ].map(item => (
             <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', fontSize: '12px' }}>
               <span style={{ color: '#64748b', fontFamily: 'Inter, sans-serif' }}>{item.label}</span>
@@ -151,7 +162,7 @@ export default function Roadmap() {
             Your CS Learning Roadmap
           </h1>
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#64748b' }}>
-            Personalized for a SWE role at a top-tier tech company
+            Personalized for {goalLabel !== '—' ? goalLabel : 'your career goal'}
           </p>
         </div>
 

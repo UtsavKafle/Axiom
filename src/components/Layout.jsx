@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const NAV_ITEMS = [
   {
@@ -68,6 +69,15 @@ export default function Layout({ children }) {
   const location = useLocation()
   const title = PAGE_TITLES[location.pathname] || 'Axiom'
   const [notifOpen, setNotifOpen] = useState(false)
+  const { user, profile, signOut } = useAuth()
+
+  const displayName = profile?.name || user?.email?.split('@')[0] || 'User'
+  const nameParts = displayName.trim().split(' ')
+  const shortName = nameParts.length > 1
+    ? `${nameParts[0]} ${nameParts[nameParts.length - 1][0]}.`
+    : nameParts[0]
+  const initial = displayName[0]?.toUpperCase() || 'U'
+  const yearLabel = profile?.year || 'CS Student'
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', position: 'relative', zIndex: 1 }}>
@@ -163,11 +173,34 @@ export default function Layout({ children }) {
             fontSize: '13px', fontWeight: '700', color: '#fff',
             border: '2px solid rgba(67,97,238,0.4)',
             flexShrink: 0,
-          }}>U</div>
-          <div>
-            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: '600', color: '#e2e8f0' }}>Utsav K.</div>
-            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '10px', color: '#4361ee' }}>CS Junior</div>
+          }}>{initial}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: '600', color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shortName}</div>
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '10px', color: '#4361ee' }}>{yearLabel}</div>
           </div>
+          <button
+            onClick={signOut}
+            title="Sign out"
+            style={{
+              flexShrink: 0,
+              width: '28px', height: '28px',
+              borderRadius: '6px',
+              background: 'transparent',
+              border: '1px solid rgba(67,97,238,0.12)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#475569',
+              transition: 'all 0.18s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; e.currentTarget.style.color = '#ef4444' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(67,97,238,0.12)'; e.currentTarget.style.color = '#475569' }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
         </div>
       </aside>
 
@@ -251,7 +284,7 @@ export default function Layout({ children }) {
               border: '2px solid rgba(67,97,238,0.4)',
               cursor: 'pointer',
               boxShadow: '0 0 12px rgba(67,97,238,0.3)',
-            }}>U</div>
+            }}>{initial}</div>
           </div>
         </header>
 
