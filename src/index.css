@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+@theme {
+  --font-syne: 'Syne', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --font-inter: 'Inter', sans-serif;
+
+  --color-axiom-bg: #0a0a0f;
+  --color-axiom-surface: #0f0f1a;
+  --color-axiom-card: #12121f;
+  --color-axiom-border: #1e1e35;
+  --color-axiom-blue: #4361ee;
+  --color-axiom-blue-glow: rgba(67, 97, 238, 0.3);
+  --color-axiom-amber: #f4a400;
+  --color-axiom-amber-glow: rgba(244, 164, 0, 0.3);
+  --color-axiom-green: #22c55e;
+  --color-axiom-red: #ef4444;
+  --color-axiom-text: #e2e8f0;
+  --color-axiom-muted: #64748b;
+  --color-axiom-subtle: #1e1e35;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  background-color: #0a0a0f;
+  color: #e2e8f0;
+  font-family: 'Inter', sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e1e35;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4361ee;
+}
+
+/* Animated grid background */
+.axiom-grid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(67, 97, 238, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(67, 97, 238, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridPulse 8s ease-in-out infinite;
+}
+
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Glassmorphism card */
+.glass-card {
+  background: rgba(18, 18, 31, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(67, 97, 238, 0.18);
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(67, 97, 238, 0.18);
+}
+
+/* Corner brackets */
+.bracket-corner {
+  position: relative;
+}
+.bracket-corner::before,
+.bracket-corner::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: #4361ee;
+  border-style: solid;
+  opacity: 0.7;
+}
+.bracket-corner::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
+}
+.bracket-corner::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 2px 2px 0;
+}
+
+/* Stagger animation */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: fadeSlideUp 0.4s ease forwards;
+}
+
+.stagger-1 { animation-delay: 0.05s; opacity: 0; }
+.stagger-2 { animation-delay: 0.1s; opacity: 0; }
+.stagger-3 { animation-delay: 0.15s; opacity: 0; }
+.stagger-4 { animation-delay: 0.2s; opacity: 0; }
+.stagger-5 { animation-delay: 0.25s; opacity: 0; }
+.stagger-6 { animation-delay: 0.3s; opacity: 0; }
+.stagger-7 { animation-delay: 0.35s; opacity: 0; }
+.stagger-8 { animation-delay: 0.4s; opacity: 0; }
+
+/* Pulsing dot */
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.4); }
+}
+
+.pulse-dot {
+  animation: pulseDot 1.5s ease-in-out infinite;
+}
+
+/* Amber pulse for in-progress nodes */
+@keyframes amberPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 164, 0, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(244, 164, 0, 0); }
+}
+.amber-pulse {
+  animation: amberPulse 2s ease-in-out infinite;
+}
+
+/* Blue glow */
+@keyframes blueGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(67, 97, 238, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(67, 97, 238, 0.8); }
+}
+.blue-glow-anim {
+  animation: blueGlow 3s ease-in-out infinite;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #12121f 25%, #1e1e35 50%, #12121f 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+/* Page transition */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateX(8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.page-transition {
+  animation: pageIn 0.3s ease forwards;
+}
+
+/* Scrollable ticker */
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-inner {
+  display: flex;
+  gap: 3rem;
+  animation: ticker 30s linear infinite;
+  white-space: nowrap;
+}
+.ticker-inner:hover {
+  animation-play-state: paused;
+}
+
+/* Ring gauge */
+.ring-gauge {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+/* Score ring */
+@keyframes ringDraw {
+  from { stroke-dashoffset: 283; }
+}
+
+/* Roadmap line */
+.roadmap-line {
+  stroke-dasharray: 4 4;
+}
