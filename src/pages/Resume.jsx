@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 
 const SCORE = 74
 
@@ -141,24 +141,49 @@ export default function Resume() {
   const [dragOver, setDragOver] = useState(false)
   const [pasteMode, setPasteMode] = useState(false)
   const [fileName, setFileName] = useState(null)
+  const [uploadedFile, setUploadedFile] = useState(null)
+  const [previewUrl, setPreviewUrl] = useState(null)
   const fileRef = useRef()
 
-  function simulate() {
-    setAnalyzing(true)
-    setTimeout(() => { setAnalyzing(false); setAnalyzed(true) }, 2200)
+  useEffect(() => {
+    return () => { if (previewUrl) URL.revokeObjectURL(previewUrl) }
+  }, [previewUrl])
+
+  function processFile(file) {
+    if (previewUrl) URL.revokeObjectURL(previewUrl)
+    setFileName(file.name)
+    setUploadedFile(file)
+    setAnalyzed(false)
+    setPreviewUrl(URL.createObjectURL(file))
   }
 
   function handleDrop(e) {
     e.preventDefault()
     setDragOver(false)
     const file = e.dataTransfer.files[0]
-    if (file) { setFileName(file.name); simulate() }
+    if (file) processFile(file)
   }
 
   function handleFile(e) {
     const file = e.target.files[0]
-    if (file) { setFileName(file.name); simulate() }
+    if (file) processFile(file)
   }
+
+  function handleAnalyze() {
+    setAnalyzing(true)
+    setTimeout(() => { setAnalyzing(false); setAnalyzed(true) }, 2200)
+  }
+
+  function handleReset() {
+    if (previewUrl) URL.revokeObjectURL(previewUrl)
+    setAnalyzed(false)
+    setAnalyzing(false)
+    setFileName(null)
+    setUploadedFile(null)
+    setPreviewUrl(null)
+  }
+
+  const isPDF = fileName?.toLowerCase().endsWith('.pdf') || uploadedFile?.type === 'application/pdf'
 
   return (
     <div style={{ display: 'flex', height: '100%' }}>
@@ -171,8 +196,9 @@ export default function Resume() {
         flexDirection: 'column',
         gap: '20px',
         background: 'rgba(10,10,15,0.4)',
+        overflow: 'hidden',
       }}>
-        <div className="animate-in stagger-1">
+        <div className="animate-in stagger-1" style={{ flexShrink: 0 }}>
           <h2 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '22px', color: '#fff', marginBottom: '6px' }}>
             Resume Reviewer
           </h2>
@@ -182,7 +208,7 @@ export default function Resume() {
         </div>
 
         {/* Toggle */}
-        <div className="animate-in stagger-2" style={{ display: 'flex', gap: '0', background: 'rgba(12,12,20,0.8)', border: '1px solid rgba(30,30,53,0.8)', borderRadius: '8px', padding: '4px' }}>
+        <div className="animate-in stagger-2" style={{ display: 'flex', gap: '0', background: 'rgba(12,12,20,0.8)', border: '1px solid rgba(30,30,53,0.8)', borderRadius: '8px', padding: '4px', flexShrink: 0 }}>
           {['Upload PDF', 'Paste Text'].map((mode, i) => (
             <button key={mode} onClick={() => setPasteMode(i === 1)} style={{
               flex: 1, padding: '8px',
@@ -196,40 +222,35 @@ export default function Resume() {
           ))}
         </div>
 
-        {/* Drop zone */}
+        {/* Upload area */}
         {!pasteMode ? (
-          <div
-            className="bracket-corner animate-in stagger-3"
-            onDragOver={e => { e.preventDefault(); setDragOver(true) }}
-            onDragLeave={() => setDragOver(false)}
-            onDrop={handleDrop}
-            onClick={() => fileRef.current.click()}
-            style={{
-              flex: 1,
-              border: `2px dashed ${dragOver ? '#4361ee' : 'rgba(67,97,238,0.25)'}`,
-              borderRadius: '14px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '16px',
-              cursor: 'pointer',
-              background: dragOver ? 'rgba(67,97,238,0.06)' : 'rgba(12,12,20,0.4)',
-              transition: 'all 0.2s ease',
-              minHeight: '280px',
-              boxShadow: dragOver ? '0 0 40px rgba(67,97,238,0.15) inset' : 'none',
-            }}
-          >
+          <>
             <input ref={fileRef} type="file" accept=".pdf,.doc,.docx,.txt" style={{ display: 'none' }} onChange={handleFile} />
 
-            {fileName ? (
-              <>
-                <div style={{ width: '56px', height: '56px', background: 'rgba(67,97,238,0.15)', border: '1px solid rgba(67,97,238,0.4)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>📄</div>
-                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '12px', color: '#7b8ff7', textAlign: 'center' }}>{fileName}</div>
-                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#64748b' }}>Click to replace</div>
-              </>
-            ) : (
-              <>
+            {!fileName ? (
+              /* Drop zone — no file yet */
+              <div
+                className="bracket-corner animate-in stagger-3"
+                onDragOver={e => { e.preventDefault(); setDragOver(true) }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={handleDrop}
+                onClick={() => fileRef.current.click()}
+                style={{
+                  flex: 1,
+                  border: `2px dashed ${dragOver ? '#4361ee' : 'rgba(67,97,238,0.25)'}`,
+                  borderRadius: '14px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '16px',
+                  cursor: 'pointer',
+                  background: dragOver ? 'rgba(67,97,238,0.06)' : 'rgba(12,12,20,0.4)',
+                  transition: 'all 0.2s ease',
+                  minHeight: '280px',
+                  boxShadow: dragOver ? '0 0 40px rgba(67,97,238,0.15) inset' : 'none',
+                }}
+              >
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(67,97,238,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '4px' }}>
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/>
                   <line x1="12" y1="3" x2="12" y2="15"/>
@@ -251,9 +272,97 @@ export default function Resume() {
                   fontSize: '13px',
                   color: '#7b8ff7',
                 }}>Browse files</div>
-              </>
+              </div>
+            ) : (
+              /* File uploaded — file info card + preview */
+              <div className="animate-in stagger-3" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', minHeight: 0 }}>
+                {/* File info card */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '10px 14px',
+                  background: 'rgba(12,12,20,0.8)',
+                  border: '1px solid rgba(67,97,238,0.25)',
+                  borderRadius: '10px',
+                  flexShrink: 0,
+                }}>
+                  <div style={{
+                    width: '36px', height: '36px',
+                    background: 'rgba(67,97,238,0.15)',
+                    border: '1px solid rgba(67,97,238,0.3)',
+                    borderRadius: '8px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '16px', flexShrink: 0,
+                  }}>📄</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontFamily: 'Space Mono, monospace', fontSize: '11px', color: '#7b8ff7',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>{fileName}</div>
+                    <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+                      {uploadedFile ? `${(uploadedFile.size / 1024).toFixed(0)} KB` : ''}
+                      {isPDF ? ' · PDF' : ''}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => fileRef.current.click()}
+                    style={{
+                      padding: '5px 12px',
+                      background: 'transparent',
+                      border: '1px solid rgba(67,97,238,0.2)',
+                      borderRadius: '6px',
+                      color: '#64748b',
+                      fontFamily: 'Inter, sans-serif', fontSize: '11px',
+                      cursor: 'pointer', flexShrink: 0,
+                      transition: 'all 0.18s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(67,97,238,0.5)'; e.currentTarget.style.color = '#7b8ff7' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(67,97,238,0.2)'; e.currentTarget.style.color = '#64748b' }}
+                  >Replace</button>
+                </div>
+
+                {/* PDF preview or fallback */}
+                {isPDF ? (
+                  <div style={{
+                    flex: 1,
+                    borderRadius: '10px',
+                    overflow: 'hidden',
+                    border: '1px solid rgba(67,97,238,0.15)',
+                    background: '#fff',
+                    minHeight: 0,
+                  }}>
+                    <iframe
+                      src={previewUrl}
+                      title="Resume Preview"
+                      style={{ width: '100%', height: '100%', border: 'none', display: 'block', minHeight: '340px' }}
+                    />
+                  </div>
+                ) : (
+                  <div style={{
+                    flex: 1,
+                    border: '1px solid rgba(67,97,238,0.12)',
+                    borderRadius: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    background: 'rgba(12,12,20,0.4)',
+                    minHeight: '200px',
+                  }}>
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(67,97,238,0.35)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#64748b', textAlign: 'center', lineHeight: '1.6' }}>
+                      Preview not available for this file type.<br/>Click Analyze to process the document.
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
-          </div>
+          </>
         ) : (
           <div className="animate-in stagger-3" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', minHeight: '280px' }}>
             <textarea
@@ -278,10 +387,10 @@ export default function Resume() {
           </div>
         )}
 
-        {/* Analyze button */}
-        {!analyzed && (
+        {/* Analyze button — visible once a file is ready */}
+        {(fileName || pasteMode) && !analyzed && (
           <button
-            onClick={simulate}
+            onClick={handleAnalyze}
             disabled={analyzing}
             className="animate-in stagger-4"
             style={{
@@ -300,6 +409,7 @@ export default function Resume() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
+              flexShrink: 0,
             }}
           >
             {analyzing ? (
@@ -397,7 +507,7 @@ export default function Resume() {
             </div>
 
             <button
-              onClick={() => setAnalyzed(false)}
+              onClick={handleReset}
               style={{
                 padding: '12px',
                 background: 'transparent',
