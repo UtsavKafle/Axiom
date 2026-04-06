@@ -10,7 +10,7 @@ const INTERESTS = ['AI / ML', 'Web Dev', 'Mobile', 'Systems', 'Data Science', 'S
 function Field({ label, children }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-      <label style={{ fontFamily: 'Space Mono, monospace', fontSize: '10px', letterSpacing: '0.12em', color: '#475569', textTransform: 'uppercase' }}>
+      <label style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', letterSpacing: '0.12em', color: '#52525b', textTransform: 'uppercase' }}>
         {label}
       </label>
       {children}
@@ -28,17 +28,16 @@ function Input({ type = 'text', value, onChange, placeholder, required }) {
       placeholder={placeholder}
       required={required}
       style={{
-        background: 'rgba(10,10,15,0.8)',
-        border: `1px solid ${focused ? 'rgba(67,97,238,0.55)' : 'rgba(67,97,238,0.18)'}`,
-        borderRadius: '8px',
-        padding: '10px 14px',
+        background: '#09090b',
+        border: `1px solid ${focused ? 'rgba(67,97,238,0.5)' : '#2a2a32'}`,
+        padding: '9px 12px',
         fontSize: '13px',
-        color: '#e2e8f0',
-        fontFamily: 'Inter, sans-serif',
+        color: '#f4f4f5',
+        fontFamily: "'IBM Plex Sans', sans-serif",
         outline: 'none',
         width: '100%',
         boxSizing: 'border-box',
-        transition: 'border-color 0.18s',
+        transition: 'border-color 0.12s',
       }}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
@@ -49,19 +48,17 @@ function Input({ type = 'text', value, onChange, placeholder, required }) {
 function Pill({ label, active, onClick, accent = 'blue' }) {
   const on = active
     ? accent === 'amber'
-      ? { background: 'rgba(244,164,0,0.12)', color: '#f4a400', border: '1px solid rgba(244,164,0,0.35)' }
-      : { background: 'rgba(67,97,238,0.15)', color: '#7b8ff7', border: '1px solid rgba(67,97,238,0.4)' }
-    : { background: 'transparent', color: '#475569', border: '1px solid rgba(30,30,53,0.9)' }
+      ? { background: 'rgba(244,164,0,0.1)', color: '#f4a400', border: '1px solid rgba(244,164,0,0.3)' }
+      : { background: 'rgba(67,97,238,0.12)', color: '#6b83f0', border: '1px solid rgba(67,97,238,0.3)' }
+    : { background: 'transparent', color: '#52525b', border: '1px solid #1e1e22' }
   return (
     <button type="button" onClick={onClick} style={{
       ...on,
-      padding: '5px 12px',
-      borderRadius: '6px',
-      fontFamily: 'Space Mono, monospace',
+      padding: '4px 10px',
+      fontFamily: "'Space Mono', monospace",
       fontSize: '10px',
-      letterSpacing: '0.04em',
       cursor: 'pointer',
-      transition: 'all 0.15s',
+      transition: 'all 0.1s',
     }}>
       {label}
     </button>
@@ -85,7 +82,7 @@ export default function Login() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0a0a0f', fontFamily: 'Space Mono, monospace', fontSize: '11px', color: '#4361ee', letterSpacing: '0.12em' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#09090b', fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#4361ee', letterSpacing: '0.12em' }}>
         LOADING...
       </div>
     )
@@ -142,51 +139,49 @@ export default function Login() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0f', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: '#09090b', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', position: 'relative', overflow: 'hidden' }}>
       <div className="axiom-grid" />
 
-      {/* Glow */}
-      <div style={{ position: 'absolute', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(67,97,238,0.07) 0%, transparent 70%)', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', pointerEvents: 'none' }} />
-
-      <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '400px' }}>
+      <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '380px' }}>
 
         {/* Logo */}
-        <div className="animate-in stagger-1" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '32px', gap: '10px' }}>
+        <div className="animate-in stagger-1" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '28px', gap: '8px' }}>
           <div style={{
-            width: '44px', height: '44px', borderRadius: '12px',
-            background: 'linear-gradient(135deg, #4361ee, #7b8ff7)',
-            boxShadow: '0 0 28px rgba(67,97,238,0.45)',
+            width: '36px', height: '36px',
+            background: '#4361ee',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '18px', color: '#fff',
+            fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '700', fontSize: '16px', color: '#fff',
           }}>A</div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '22px', color: '#fff', letterSpacing: '-0.02em' }}>Axiom</div>
-            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '10px', color: '#4361ee', letterSpacing: '0.14em', marginTop: '3px' }}>CS_CAREER_OS v2.4</div>
+            <div style={{ fontFamily: "'DM Serif Display', serif", fontWeight: 400, fontSize: '24px', color: '#f4f4f5', letterSpacing: '-0.01em' }}>Axiom</div>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#4361ee', letterSpacing: '0.14em', marginTop: '2px' }}>CS_CAREER_OS v2.4</div>
           </div>
         </div>
 
         {/* Card */}
-        <div className="glass-card bracket-corner animate-in stagger-2" style={{ padding: '28px' }}>
+        <div className="animate-in stagger-2" style={{
+          background: '#111113',
+          border: '1px solid #1e1e22',
+          padding: '24px',
+        }}>
 
           {/* Tab switcher */}
-          <div style={{ display: 'flex', background: 'rgba(10,10,15,0.7)', border: '1px solid rgba(30,30,53,0.9)', borderRadius: '8px', padding: '3px', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', background: '#09090b', border: '1px solid #1e1e22', padding: '3px', marginBottom: '20px' }}>
             {['login', 'signup'].map(tab => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => switchMode(tab)}
                 style={{
-                  flex: 1, padding: '8px',
-                  borderRadius: '6px',
-                  background: mode === tab ? 'rgba(67,97,238,0.15)' : 'transparent',
-                  border: mode === tab ? '1px solid rgba(67,97,238,0.3)' : '1px solid transparent',
-                  color: mode === tab ? '#e2e8f0' : '#475569',
-                  fontFamily: 'Space Mono, monospace', fontSize: '11px',
-                  fontWeight: mode === tab ? '600' : '400',
+                  flex: 1, padding: '7px',
+                  background: mode === tab ? 'rgba(67,97,238,0.12)' : 'transparent',
+                  border: mode === tab ? '1px solid rgba(67,97,238,0.25)' : '1px solid transparent',
+                  color: mode === tab ? '#f4f4f5' : '#52525b',
+                  fontFamily: "'Space Mono', monospace", fontSize: '10px',
+                  fontWeight: mode === tab ? '700' : '400',
                   letterSpacing: '0.08em',
                   cursor: 'pointer',
-                  transition: 'all 0.18s',
-                  boxShadow: mode === tab ? '0 0 10px rgba(67,97,238,0.18)' : 'none',
+                  transition: 'all 0.1s',
                 }}
               >
                 {tab === 'login' ? 'SIGN_IN' : 'SIGN_UP'}
@@ -194,7 +189,7 @@ export default function Login() {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
             {mode === 'signup' && (
               <Field label="Full Name">
@@ -212,7 +207,7 @@ export default function Login() {
 
             {mode === 'signup' && (
               <Field label="Year">
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
                   {YEARS.map(y => <Pill key={y} label={y} active={year === y} onClick={() => setYear(y)} />)}
                 </div>
               </Field>
@@ -220,7 +215,7 @@ export default function Login() {
 
             {mode === 'signup' && (
               <Field label="Career Goal">
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
                   {GOALS.map(g => <Pill key={g} label={g} active={goal === g} onClick={() => setGoal(g)} accent="amber" />)}
                 </div>
               </Field>
@@ -228,20 +223,20 @@ export default function Login() {
 
             {mode === 'signup' && (
               <Field label="Interests">
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
                   {INTERESTS.map(item => <Pill key={item} label={item} active={interests.includes(item)} onClick={() => toggleInterest(item)} />)}
                 </div>
               </Field>
             )}
 
             {error && (
-              <div style={{ padding: '10px 14px', background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px', fontFamily: 'Space Mono, monospace', fontSize: '11px', color: '#f87171' }}>
+              <div style={{ padding: '9px 12px', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderLeft: '2px solid #ef4444', fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#f87171' }}>
                 ERR: {error}
               </div>
             )}
 
             {info && (
-              <div style={{ padding: '10px 14px', background: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: '8px', fontFamily: 'Space Mono, monospace', fontSize: '11px', color: '#4ade80' }}>
+              <div style={{ padding: '9px 12px', background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)', borderLeft: '2px solid #22c55e', fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#4ade80' }}>
                 {info}
               </div>
             )}
@@ -250,19 +245,19 @@ export default function Login() {
               type="submit"
               disabled={submitting}
               style={{
-                padding: '12px',
-                background: submitting ? 'rgba(67,97,238,0.25)' : 'linear-gradient(135deg, #4361ee 0%, #6b7ff7 100%)',
+                padding: '11px',
+                background: submitting ? 'rgba(67,97,238,0.2)' : '#4361ee',
                 border: 'none',
-                borderRadius: '8px',
-                color: submitting ? '#64748b' : '#fff',
-                fontFamily: 'Syne, sans-serif',
-                fontWeight: '700',
-                fontSize: '14px',
+                color: submitting ? '#71717a' : '#fff',
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                fontWeight: '600',
+                fontSize: '13px',
                 cursor: submitting ? 'not-allowed' : 'pointer',
-                boxShadow: submitting ? 'none' : '0 0 24px rgba(67,97,238,0.4)',
-                transition: 'all 0.2s',
+                transition: 'opacity 0.12s',
                 marginTop: '4px',
               }}
+              onMouseEnter={e => { if (!submitting) e.currentTarget.style.opacity = '0.88' }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
             >
               {submitting ? 'Processing...' : mode === 'login' ? 'Sign In →' : 'Create Account →'}
             </button>
@@ -270,7 +265,7 @@ export default function Login() {
           </form>
         </div>
 
-        <div className="animate-in stagger-3" style={{ textAlign: 'center', marginTop: '20px', fontFamily: 'Space Mono, monospace', fontSize: '10px', color: '#1e1e35' }}>
+        <div className="animate-in stagger-3" style={{ textAlign: 'center', marginTop: '16px', fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#2a2a32' }}>
           // AXIOM — built for CS students
         </div>
 

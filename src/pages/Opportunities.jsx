@@ -68,10 +68,10 @@ const OPPORTUNITIES = [
 const STACK_FILTERS = ['React', 'Python', 'Go', 'TypeScript', 'Rust', 'C++']
 
 const TYPE_COLORS = {
-  Internship: { bg: 'rgba(67,97,238,0.15)', color: '#7b8ff7', border: 'rgba(67,97,238,0.3)' },
-  Hackathon: { bg: 'rgba(239,68,68,0.15)', color: '#f87171', border: 'rgba(239,68,68,0.3)' },
-  Fellowship: { bg: 'rgba(168,85,247,0.15)', color: '#c084fc', border: 'rgba(168,85,247,0.3)' },
-  'Open Source': { bg: 'rgba(34,197,94,0.15)', color: '#4ade80', border: 'rgba(34,197,94,0.3)' },
+  Internship:    { bg: 'rgba(67,97,238,0.1)',  color: '#6b83f0', border: 'rgba(67,97,238,0.25)' },
+  Hackathon:     { bg: 'rgba(239,68,68,0.1)',  color: '#f87171', border: 'rgba(239,68,68,0.25)' },
+  Fellowship:    { bg: 'rgba(6,182,212,0.1)',  color: '#22d3ee', border: 'rgba(6,182,212,0.25)' },
+  'Open Source': { bg: 'rgba(34,197,94,0.1)',  color: '#4ade80', border: 'rgba(34,197,94,0.25)' },
 }
 
 function urgencyColor(days) {
@@ -81,13 +81,13 @@ function urgencyColor(days) {
 }
 
 function MatchBar({ score }) {
-  const color = score >= 85 ? '#22c55e' : score >= 70 ? '#f4a400' : '#94a3b8'
+  const color = score >= 85 ? '#22c55e' : score >= 70 ? '#f4a400' : '#71717a'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-      <div style={{ flex: 1, height: '4px', background: 'rgba(30,30,53,0.8)', borderRadius: '2px', overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${score}%`, background: color, borderRadius: '2px', boxShadow: `0 0 6px ${color}` }} />
+      <div style={{ flex: 1, height: '3px', background: '#1e1e22', overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${score}%`, background: color }} />
       </div>
-      <span style={{ fontFamily: 'Space Mono, monospace', fontSize: '10px', color, whiteSpace: 'nowrap' }}>{score}% match</span>
+      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color, whiteSpace: 'nowrap' }}>{score}%</span>
     </div>
   )
 }
@@ -110,67 +110,65 @@ export default function Opportunities() {
   })
 
   return (
-    <div style={{ display: 'flex', gap: '0', height: '100%' }}>
+    <div style={{ display: 'flex', height: '100%' }}>
       {/* Left filter sidebar */}
       <div style={{
-        width: '220px',
+        width: '200px',
         flexShrink: 0,
-        borderRight: '1px solid rgba(67,97,238,0.12)',
-        padding: '24px 16px',
+        borderRight: '1px solid #1e1e22',
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px',
-        background: 'rgba(10,10,15,0.5)',
+        background: '#0d0d0f',
+        overflowY: 'auto',
       }}>
-        <div className="animate-in stagger-1">
-          <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '12px', color: '#64748b', letterSpacing: '0.1em', marginBottom: '10px' }}>TYPE</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        {/* Type filter */}
+        <div className="animate-in stagger-1" style={{ padding: '16px', borderBottom: '1px solid #1e1e22' }}>
+          <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '700', fontSize: '9px', color: '#52525b', letterSpacing: '0.1em', marginBottom: '8px', textTransform: 'uppercase' }}>TYPE</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
             {['All', 'Internship', 'Hackathon', 'Fellowship', 'Open Source'].map(t => (
               <button key={t} onClick={() => setActiveType(t)} style={{
-                textAlign: 'left', padding: '7px 10px', borderRadius: '6px',
-                border: 'none', background: activeType === t ? 'rgba(67,97,238,0.12)' : 'transparent',
-                color: activeType === t ? '#7b8ff7' : '#64748b',
-                fontFamily: 'Inter, sans-serif', fontSize: '13px',
-                cursor: 'pointer', fontWeight: activeType === t ? '600' : '400',
+                textAlign: 'left', padding: '7px 8px',
+                border: 'none', background: activeType === t ? '#111113' : 'transparent',
+                color: activeType === t ? '#f4f4f5' : '#71717a',
+                fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '12px',
+                cursor: 'pointer', fontWeight: activeType === t ? '500' : '400',
                 borderLeft: activeType === t ? '2px solid #4361ee' : '2px solid transparent',
-                transition: 'all 0.15s',
+                transition: 'all 0.1s',
               }}>{t}</button>
             ))}
           </div>
         </div>
 
-        <div style={{ height: '1px', background: 'rgba(30,30,53,0.8)' }} />
-
-        <div className="animate-in stagger-2">
-          <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '12px', color: '#64748b', letterSpacing: '0.1em', marginBottom: '10px' }}>YOUR STACK</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+        {/* Stack filter */}
+        <div className="animate-in stagger-2" style={{ padding: '16px', borderBottom: '1px solid #1e1e22' }}>
+          <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '700', fontSize: '9px', color: '#52525b', letterSpacing: '0.1em', marginBottom: '8px', textTransform: 'uppercase' }}>YOUR STACK</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
             {STACK_FILTERS.map(s => (
               <button key={s} onClick={() => toggleStack(s)} style={{
-                padding: '4px 10px', borderRadius: '12px',
-                border: activeStack.includes(s) ? '1px solid rgba(67,97,238,0.5)' : '1px solid rgba(30,30,53,0.8)',
-                background: activeStack.includes(s) ? 'rgba(67,97,238,0.15)' : 'transparent',
-                color: activeStack.includes(s) ? '#7b8ff7' : '#475569',
-                fontFamily: 'Space Mono, monospace', fontSize: '10px',
-                cursor: 'pointer', transition: 'all 0.15s',
+                padding: '3px 8px',
+                border: activeStack.includes(s) ? '1px solid rgba(67,97,238,0.4)' : '1px solid #1e1e22',
+                background: activeStack.includes(s) ? 'rgba(67,97,238,0.12)' : 'transparent',
+                color: activeStack.includes(s) ? '#6b83f0' : '#52525b',
+                fontFamily: "'Space Mono', monospace", fontSize: '9px',
+                cursor: 'pointer', transition: 'all 0.1s',
               }}>{s}</button>
             ))}
           </div>
         </div>
 
-        <div style={{ height: '1px', background: 'rgba(30,30,53,0.8)' }} />
-
-        <div className="animate-in stagger-3">
-          <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '12px', color: '#64748b', letterSpacing: '0.1em', marginBottom: '10px' }}>OPTIONS</div>
+        {/* Options */}
+        <div className="animate-in stagger-3" style={{ padding: '16px', borderBottom: '1px solid #1e1e22' }}>
+          <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '700', fontSize: '9px', color: '#52525b', letterSpacing: '0.1em', marginBottom: '8px', textTransform: 'uppercase' }}>OPTIONS</div>
           <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
             <div
               onClick={() => setRemoteOnly(v => !v)}
               style={{
-                width: '36px', height: '20px',
-                background: remoteOnly ? '#4361ee' : 'rgba(30,30,53,0.8)',
-                border: remoteOnly ? '1px solid rgba(67,97,238,0.5)' : '1px solid rgba(30,30,53,0.9)',
-                borderRadius: '10px',
+                width: '32px', height: '18px',
+                background: remoteOnly ? '#4361ee' : '#1e1e22',
+                border: remoteOnly ? '1px solid rgba(67,97,238,0.5)' : '1px solid #2a2a32',
+                borderRadius: '9px',
                 position: 'relative',
-                transition: 'all 0.2s',
+                transition: 'all 0.15s',
                 cursor: 'pointer',
                 flexShrink: 0,
               }}
@@ -178,191 +176,199 @@ export default function Opportunities() {
               <div style={{
                 position: 'absolute',
                 top: '2px',
-                left: remoteOnly ? '18px' : '2px',
-                width: '14px', height: '14px',
+                left: remoteOnly ? '16px' : '2px',
+                width: '12px', height: '12px',
                 background: '#fff',
                 borderRadius: '50%',
-                transition: 'left 0.2s',
+                transition: 'left 0.15s',
               }} />
             </div>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#94a3b8' }}>Remote only</span>
+            <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '12px', color: '#a1a1aa' }}>Remote only</span>
           </label>
         </div>
 
         <button
           onClick={() => { setActiveType('All'); setActiveStack([]); setRemoteOnly(false) }}
           style={{
-            marginTop: 'auto', padding: '8px',
+            margin: '12px 16px', padding: '7px',
             background: 'transparent',
-            border: '1px solid rgba(30,30,53,0.8)',
-            borderRadius: '6px', color: '#64748b',
-            fontFamily: 'Inter, sans-serif', fontSize: '12px',
+            border: '1px solid #1e1e22',
+            color: '#52525b',
+            fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '11px',
             cursor: 'pointer',
-            transition: 'all 0.15s',
+            transition: 'all 0.1s',
           }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(67,97,238,0.3)'; e.currentTarget.style.color = '#94a3b8' }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(30,30,53,0.8)'; e.currentTarget.style.color = '#64748b' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(67,97,238,0.3)'; e.currentTarget.style.color = '#a1a1aa' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e1e22'; e.currentTarget.style.color = '#52525b' }}
         >Clear filters</button>
       </div>
 
       {/* Main content */}
-      <div style={{ flex: 1, padding: '24px 28px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-        {/* Deadline tracker */}
+        {/* Deadline tracker — sticky bar */}
         <div className="animate-in stagger-1" style={{
-          background: 'rgba(12,12,20,0.85)',
-          border: '1px solid rgba(67,97,238,0.15)',
-          borderRadius: '12px',
-          padding: '16px 20px',
+          background: '#0d0d0f',
+          borderBottom: '1px solid #1e1e22',
+          padding: '10px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          flexShrink: 0,
         }}>
-          <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '13px', color: '#e2e8f0', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444', display: 'inline-block', boxShadow: '0 0 8px #ef4444' }} className="pulse-dot" />
-            Upcoming Deadlines
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginRight: '4px' }}>
+            <span className="pulse-dot" style={{ width: '5px', height: '5px', background: '#ef4444', display: 'inline-block' }} />
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#52525b', letterSpacing: '0.08em' }}>DEADLINES</span>
           </div>
-          <div style={{ display: 'flex', gap: '14px' }}>
-            {DEADLINES.map((d, i) => (
-              <div key={i} style={{
-                flex: 1,
-                padding: '12px 16px',
-                background: `${d.color}0d`,
-                border: `1px solid ${d.color}30`,
-                borderLeft: `3px solid ${d.color}`,
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-                <div>
-                  <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '13px', color: '#e2e8f0' }}>{d.company}</div>
-                  <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#64748b' }}>{d.role}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontFamily: 'Space Mono, monospace', fontWeight: '700', fontSize: '18px', color: d.color }}>{d.days}</div>
-                  <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '9px', color: '#64748b' }}>days left</div>
-                </div>
+          {DEADLINES.map((d, i) => (
+            <div key={i} style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '5px 12px',
+              background: `${d.color}06`,
+              border: `1px solid ${d.color}20`,
+              borderLeft: `2px solid ${d.color}`,
+            }}>
+              <div>
+                <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '500', fontSize: '12px', color: '#f4f4f5' }}>{d.company}</span>
+                <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '11px', color: '#71717a' }}> — {d.role}</span>
               </div>
-            ))}
-          </div>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: '700', fontSize: '13px', color: d.color, marginLeft: '4px' }}>{d.days}d</span>
+            </div>
+          ))}
         </div>
 
-        {/* Type filter pills */}
-        <div className="animate-in stagger-2" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+        {/* Type filter pills + count */}
+        <div className="animate-in stagger-2" style={{
+          display: 'flex', gap: '0', padding: '0 20px',
+          borderBottom: '1px solid #1e1e22',
+          background: '#09090b',
+          alignItems: 'center',
+          height: '44px',
+          flexShrink: 0,
+        }}>
           {TYPE_FILTERS.map(f => (
             <button key={f} onClick={() => setActiveType(f)} style={{
-              padding: '6px 16px', borderRadius: '20px',
-              border: activeType === f ? '1px solid #4361ee' : '1px solid rgba(30,30,53,0.8)',
-              background: activeType === f ? 'rgba(67,97,238,0.15)' : 'transparent',
-              color: activeType === f ? '#7b8ff7' : '#64748b',
-              fontSize: '13px', cursor: 'pointer',
-              fontFamily: 'Inter, sans-serif',
-              boxShadow: activeType === f ? '0 0 12px rgba(67,97,238,0.2)' : 'none',
-              transition: 'all 0.18s',
+              padding: '0 12px', height: '44px',
+              border: 'none',
+              borderBottom: activeType === f ? '2px solid #4361ee' : '2px solid transparent',
+              background: 'transparent',
+              color: activeType === f ? '#f4f4f5' : '#71717a',
+              fontSize: '12px', cursor: 'pointer',
+              fontFamily: "'IBM Plex Sans', sans-serif",
+              fontWeight: activeType === f ? '500' : '400',
+              transition: 'all 0.12s', whiteSpace: 'nowrap',
             }}>{f}</button>
           ))}
-          <span style={{ marginLeft: 'auto', fontFamily: 'Space Mono, monospace', fontSize: '10px', color: '#64748b' }}>
+          <span style={{ marginLeft: 'auto', fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#52525b' }}>
             {filtered.length} results
           </span>
         </div>
 
-        {/* Opportunity cards */}
-        {filtered.length === 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 40px', gap: '20px' }}>
-            <svg width="80" height="80" viewBox="0 0 80 80">
-              <rect x="15" y="15" width="50" height="50" rx="6" fill="none" stroke="rgba(67,97,238,0.3)" strokeWidth="1.5" strokeDasharray="4 4" />
-              <circle cx="40" cy="40" r="12" fill="rgba(67,97,238,0.1)" stroke="rgba(67,97,238,0.3)" strokeWidth="1.5" />
-              <line x1="40" y1="28" x2="40" y2="35" stroke="rgba(67,97,238,0.5)" strokeWidth="2" strokeLinecap="round" />
-              <line x1="40" y1="44" x2="40" y2="52" stroke="rgba(67,97,238,0.5)" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '16px', color: '#e2e8f0' }}>No opportunities match your filters</div>
-            <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#64748b' }}>Try clearing some filters to see more results</div>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
-            {filtered.map((op, i) => {
-              const typeStyle = TYPE_COLORS[op.type] || TYPE_COLORS.Internship
-              const urgency = urgencyColor(op.daysLeft)
-              return (
-                <div
-                  key={op.id}
-                  className={`glass-card animate-in stagger-${Math.min(i + 3, 8)}`}
-                  style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}
-                >
-                  {/* Header */}
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{
-                        width: '36px', height: '36px', borderRadius: '8px',
-                        background: `${op.companyColor}20`,
-                        border: `1px solid ${op.companyColor}40`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontFamily: 'Syne, sans-serif', fontWeight: '800',
-                        fontSize: '13px', color: op.companyColor,
-                        flexShrink: 0,
-                      }}>{op.companyInitial}</div>
-                      <div>
-                        <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '12px', color: '#e2e8f0' }}>{op.company}</div>
-                        {op.remote && (
-                          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: '9px', color: '#22c55e', background: 'rgba(34,197,94,0.1)', padding: '1px 5px', borderRadius: '3px' }}>REMOTE</span>
-                        )}
+        {/* Cards */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+          {filtered.length === 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 40px', gap: '16px' }}>
+              <svg width="60" height="60" viewBox="0 0 80 80">
+                <rect x="15" y="15" width="50" height="50" fill="none" stroke="rgba(67,97,238,0.2)" strokeWidth="1" strokeDasharray="4 4" />
+                <circle cx="40" cy="40" r="10" fill="rgba(67,97,238,0.06)" stroke="rgba(67,97,238,0.2)" strokeWidth="1" />
+              </svg>
+              <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '500', fontSize: '14px', color: '#f4f4f5' }}>No opportunities match your filters</div>
+              <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '12px', color: '#71717a' }}>Try clearing some filters to see more results</div>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#1e1e22' }}>
+              {filtered.map((op, i) => {
+                const typeStyle = TYPE_COLORS[op.type] || TYPE_COLORS.Internship
+                const urgency = urgencyColor(op.daysLeft)
+                return (
+                  <div
+                    key={op.id}
+                    className={`animate-in stagger-${Math.min(i + 3, 8)}`}
+                    style={{
+                      padding: '16px',
+                      display: 'flex', flexDirection: 'column', gap: '10px',
+                      background: '#09090b',
+                      transition: 'background 0.1s',
+                      cursor: 'default',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#111113' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#09090b' }}
+                  >
+                    {/* Type badge + company */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+                      <span style={{
+                        padding: '2px 7px', fontSize: '9px',
+                        fontFamily: "'Space Mono', monospace", fontWeight: '700',
+                        background: typeStyle.bg, color: typeStyle.color, border: `1px solid ${typeStyle.border}`,
+                        whiteSpace: 'nowrap', letterSpacing: '0.05em',
+                      }}>{op.type.toUpperCase()}</span>
+                      {op.remote && (
+                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#22c55e', background: 'rgba(34,197,94,0.08)', padding: '2px 5px', border: '1px solid rgba(34,197,94,0.2)' }}>REMOTE</span>
+                      )}
+                    </div>
+
+                    {/* Company + role */}
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <div style={{
+                          width: '28px', height: '28px',
+                          background: `${op.companyColor}14`,
+                          border: `1px solid ${op.companyColor}30`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontFamily: "'Space Mono', monospace", fontWeight: '700',
+                          fontSize: '11px', color: op.companyColor, flexShrink: 0,
+                        }}>{op.companyInitial}</div>
+                        <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600', fontSize: '13px', color: '#f4f4f5' }}>{op.company}</div>
+                      </div>
+                      <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '12px', color: '#a1a1aa', lineHeight: '1.35', marginBottom: '3px' }}>
+                        {op.role}
+                      </div>
+                      <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '11px', color: '#52525b' }}>
+                        {op.location}
                       </div>
                     </div>
-                    <span style={{
-                      padding: '3px 8px', borderRadius: '4px', fontSize: '10px',
-                      fontFamily: 'Space Mono, monospace', fontWeight: '700',
-                      background: typeStyle.bg, color: typeStyle.color, border: `1px solid ${typeStyle.border}`,
-                      whiteSpace: 'nowrap',
-                    }}>{op.type.toUpperCase()}</span>
-                  </div>
 
-                  {/* Role */}
-                  <div>
-                    <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '13.5px', color: '#e2e8f0', lineHeight: '1.3', marginBottom: '4px' }}>
-                      {op.role}
+                    {/* Tags */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px' }}>
+                      {op.tags.map(tag => (
+                        <span key={tag} style={{
+                          padding: '2px 6px',
+                          background: '#111113',
+                          border: '1px solid #1e1e22',
+                          fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#52525b',
+                        }}>{tag}</span>
+                      ))}
                     </div>
-                    <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#64748b' }}>
-                      📍 {op.location}
+
+                    {/* Match bar */}
+                    <MatchBar score={op.match} />
+
+                    {/* Footer */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
+                      <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: urgency }}>
+                        {op.daysLeft}d left
+                      </div>
+                      <button style={{
+                        padding: '6px 14px',
+                        background: '#4361ee',
+                        border: 'none',
+                        color: '#fff', fontFamily: "'IBM Plex Sans', sans-serif",
+                        fontWeight: '500', fontSize: '11px',
+                        cursor: 'pointer',
+                        transition: 'opacity 0.12s',
+                      }}
+                        onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                      >Apply →</button>
                     </div>
                   </div>
-
-                  {/* Tags */}
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-                    {op.tags.map(tag => (
-                      <span key={tag} style={{
-                        padding: '2px 7px', borderRadius: '4px',
-                        background: 'rgba(15,15,26,0.8)',
-                        border: '1px solid rgba(30,30,53,0.9)',
-                        fontFamily: 'Space Mono, monospace', fontSize: '9px', color: '#64748b',
-                      }}>{tag}</span>
-                    ))}
-                  </div>
-
-                  {/* Match bar */}
-                  <MatchBar score={op.match} />
-
-                  {/* Footer */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
-                    <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '10px', color: urgency }}>
-                      ⏱ {op.daysLeft}d left
-                    </div>
-                    <button style={{
-                      padding: '7px 14px',
-                      background: 'linear-gradient(135deg, #4361ee, #6b7ff7)',
-                      border: 'none', borderRadius: '6px',
-                      color: '#fff', fontFamily: 'Inter, sans-serif',
-                      fontWeight: '600', fontSize: '12px',
-                      cursor: 'pointer',
-                      boxShadow: '0 0 14px rgba(67,97,238,0.35)',
-                      transition: 'all 0.18s',
-                    }}
-                      onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 24px rgba(67,97,238,0.55)'}
-                      onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 14px rgba(67,97,238,0.35)'}
-                    >Apply →</button>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
