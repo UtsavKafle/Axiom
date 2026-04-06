@@ -139,15 +139,17 @@ export default function Roadmap() {
         <div className="glass-card animate-in stagger-3" style={{ padding: '18px' }}>
           <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '700', fontSize: '13px', color: '#e2e8f0', marginBottom: '12px' }}>Node States</div>
           {[
-            { label: 'Completed', color: '#4361ee', dotStyle: {} },
-            { label: 'In Progress', color: '#f4a400', pulse: true },
-            { label: 'Locked', color: '#374151', dotStyle: {} },
+            { label: 'Completed', color: '#4361ee', glow: 'rgba(67,97,238,0.7)' },
+            { label: 'In Progress', color: '#f4a400', glow: 'rgba(244,164,0,0.7)' },
+            { label: 'Locked', color: '#374151', glow: null },
           ].map(s => (
             <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
               <div style={{
-                width: '12px', height: '12px', borderRadius: '50%',
+                width: '14px', height: '14px',
+                clipPath: 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
                 background: s.color,
-                boxShadow: s.color !== '#374151' ? `0 0 8px ${s.color}` : 'none',
+                filter: s.glow ? `drop-shadow(0 0 4px ${s.glow})` : 'none',
+                flexShrink: 0,
               }} />
               <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#94a3b8' }}>{s.label}</span>
             </div>
@@ -158,11 +160,22 @@ export default function Roadmap() {
       {/* Main roadmap */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '40px 60px', position: 'relative' }}>
         <div className="animate-in stagger-1" style={{ marginBottom: '32px', textAlign: 'center' }}>
-          <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '26px', color: '#fff', marginBottom: '6px' }}>
-            Your CS Learning Roadmap
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '14px' }}>
+            <div style={{ width: '48px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(67,97,238,0.6))' }} />
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: '10px', color: '#4361ee', letterSpacing: '0.2em', fontWeight: '700' }}>// SYS.ROADMAP</span>
+            <div style={{ width: '48px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(67,97,238,0.6))' }} />
+          </div>
+          <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '40px', color: '#fff', letterSpacing: '-0.03em', lineHeight: '1.05', marginBottom: '10px' }}>
+            YOUR CS{' '}
+            <span style={{
+              background: 'linear-gradient(135deg, #4361ee 0%, #7b8ff7 50%, #f4a400 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>LEARNING_PATH</span>
           </h1>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#64748b' }}>
-            Personalized for {goalLabel !== '—' ? goalLabel : 'your career goal'}
+          <p style={{ fontFamily: 'Space Mono, monospace', fontSize: '11px', color: '#475569', letterSpacing: '0.1em' }}>
+            PERSONALIZED_FOR → SWE_ROLE @ TOP_TIER_TECH
           </p>
         </div>
 
@@ -240,31 +253,32 @@ export default function Roadmap() {
                     }}
                     onClick={() => node.status !== 'locked' && openNode(node)}
                   >
-                    {/* Node circle */}
+                    {/* Node hex */}
                     <div
-                      className={node.status === 'in-progress' ? 'amber-pulse' : node.status === 'completed' ? 'blue-glow-anim' : ''}
-                      style={{
-                        width: '64px', height: '64px',
-                        borderRadius: '50%',
-                        background: node.status === 'completed'
-                          ? `linear-gradient(135deg, ${phase.color}, ${phase.color}99)`
-                          : node.status === 'in-progress'
-                            ? 'linear-gradient(135deg, #f4a400, #f4a40080)'
-                            : '#12121f',
-                        border: `2px solid ${cfg.border}`,
-                        boxShadow: node.status !== 'locked' ? `0 0 20px ${cfg.glow}` : 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: node.status === 'completed' ? '22px' : '16px',
-                        color: node.status === 'locked' ? '#374151' : '#fff',
-                        fontWeight: '700',
-                        transition: 'transform 0.2s ease',
-                      }}
-                      onMouseEnter={e => { if (node.status !== 'locked') e.currentTarget.style.transform = 'scale(1.1)' }}
-                      onMouseLeave={e => { e.currentTarget.style.transform = '' }}
+                      className={node.status === 'completed' ? 'node-glow-blue' : node.status === 'in-progress' ? 'node-glow-amber' : ''}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
-                      {node.status === 'completed' ? '✓' : node.status === 'in-progress' ? '◉' : '○'}
+                      <div
+                        className="node-hex"
+                        style={{
+                          width: '64px', height: '64px',
+                          background: node.status === 'completed'
+                            ? `linear-gradient(135deg, ${phase.color}, ${phase.color}99)`
+                            : node.status === 'in-progress'
+                              ? 'linear-gradient(135deg, #f4a400, #f4a40080)'
+                              : 'linear-gradient(135deg, #1a1a2e, #12121f)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: node.status === 'completed' ? '22px' : '16px',
+                          color: node.status === 'locked' ? '#374151' : '#fff',
+                          fontWeight: '700',
+                        }}
+                        onMouseEnter={e => { if (node.status !== 'locked') e.currentTarget.classList.add('node-hex-jiggle') }}
+                        onMouseLeave={e => e.currentTarget.classList.remove('node-hex-jiggle')}
+                      >
+                        {node.status === 'completed' ? '✓' : node.status === 'in-progress' ? '◉' : '○'}
+                      </div>
                     </div>
 
                     {/* Label */}
@@ -325,13 +339,19 @@ export default function Roadmap() {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
               <div style={{
-                width: '48px', height: '48px', borderRadius: '50%',
-                background: selectedNode.status === 'in-progress' ? '#f4a400' : '#4361ee',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '20px', color: '#fff',
-                boxShadow: `0 0 20px ${selectedNode.status === 'in-progress' ? 'rgba(244,164,0,0.5)' : 'rgba(67,97,238,0.5)'}`,
+                filter: `drop-shadow(0 0 10px ${selectedNode.status === 'in-progress' ? 'rgba(244,164,0,0.7)' : 'rgba(67,97,238,0.7)'})`,
               }}>
-                {selectedNode.status === 'completed' ? '✓' : '◉'}
+                <div style={{
+                  width: '48px', height: '48px',
+                  clipPath: 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
+                  background: selectedNode.status === 'in-progress'
+                    ? 'linear-gradient(135deg, #f4a400, #f4a40080)'
+                    : 'linear-gradient(135deg, #4361ee, #4361ee99)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '20px', color: '#fff',
+                }}>
+                  {selectedNode.status === 'completed' ? '✓' : '◉'}
+                </div>
               </div>
               <div>
                 <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: '800', fontSize: '18px', color: '#fff' }}>{selectedNode.label}</div>

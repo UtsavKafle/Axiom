@@ -209,3 +209,34 @@ html, body, #root {
 .roadmap-line {
   stroke-dasharray: 4 4;
 }
+
+/* ── Hex nodes ─────────────────────────────────────────────── */
+.node-hex {
+  clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  transition: transform 0.25s ease;
+}
+
+/* Glow wrappers — filter works through clip-path, box-shadow doesn't */
+@keyframes hexBlueGlow {
+  0%, 100% { filter: drop-shadow(0 0 5px rgba(67, 97, 238, 0.55)); }
+  50%       { filter: drop-shadow(0 0 18px rgba(67, 97, 238, 0.95)); }
+}
+@keyframes hexAmberPulse {
+  0%, 100% { filter: drop-shadow(0 0 5px rgba(244, 164, 0, 0.55)); }
+  50%       { filter: drop-shadow(0 0 18px rgba(244, 164, 0, 0.95)); }
+}
+.node-glow-blue  { animation: hexBlueGlow   3s ease-in-out infinite; }
+.node-glow-amber { animation: hexAmberPulse 2s ease-in-out infinite; }
+
+/* Fluid polygon jiggle on hover */
+@keyframes nodeJiggle {
+  0%   { clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);  transform: scale(1.13); }
+  18%  { clip-path: polygon(53% 1%, 96% 23%, 91% 78%, 47% 99%, 4%  76%, 9%  22%); transform: scale(1.15) rotate(5deg); }
+  36%  { clip-path: polygon(47% 0%, 91% 28%, 96% 72%, 53% 100%, 9% 72%, 4%  28%); transform: scale(1.14) rotate(-4deg); }
+  54%  { clip-path: polygon(51% 1%, 94% 24%, 90% 77%, 49% 99%, 6%  77%, 10% 23%); transform: scale(1.16) rotate(3deg); }
+  72%  { clip-path: polygon(49% 0%, 92% 27%, 95% 73%, 51% 100%, 8% 73%, 7%  25%); transform: scale(1.13) rotate(-2deg); }
+  100% { clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7%  25%); transform: scale(1.13); }
+}
+.node-hex-jiggle {
+  animation: nodeJiggle 0.6s ease-in-out infinite !important;
+}
