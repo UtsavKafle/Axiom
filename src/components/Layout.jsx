@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import OnboardingModal from './onboarding/OnboardingModal'
+import ProfilePanel from './profile/ProfilePanel'
 
 const NAV_ITEMS = [
   {
@@ -69,7 +71,19 @@ export default function Layout({ children }) {
   const location = useLocation()
   const title = PAGE_TITLES[location.pathname] || 'Axiom'
   const [notifOpen, setNotifOpen] = useState(false)
-  const { user, profile, signOut } = useAuth()
+  const [profilePanelOpen, setProfilePanelOpen] = useState(false)
+  const [onboardingOpen, setOnboardingOpen] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  const { user, profile, careerProfile, loading, signOut } = useAuth()
+
+  // Auto-show onboarding when user has no career profile
+  useEffect(() => {
+    if (!loading && user && careerProfile === null) {
+      setIsEditMode(false)
+      setOnboardingOpen(true)
+    }
+  }, [loading, user, careerProfile])
 
   const displayName = profile?.name || user?.email?.split('@')[0] || 'User'
   const nameParts = displayName.trim().split(' ')
@@ -79,6 +93,11 @@ export default function Layout({ children }) {
   const initial = displayName[0]?.toUpperCase() || 'U'
   const yearLabel = profile?.year || 'CS Student'
   const streak = 7
+
+  function openEditProfile() {
+    setIsEditMode(true)
+    setOnboardingOpen(true)
+  }
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', position: 'relative', zIndex: 1 }}>
@@ -150,10 +169,7 @@ export default function Layout({ children }) {
         </nav>
 
         {/* User section */}
-        <div style={{
-          padding: '12px 16px',
-          borderTop: '1px solid #1e1e22',
-        }}>
+        <div style={{ padding: '12px 16px', borderTop: '1px solid #1e1e22' }}>
           {/* Streak indicator */}
           <div style={{
             display: 'flex',
@@ -272,30 +288,54 @@ export default function Layout({ children }) {
               }} />
             </button>
 
-            {/* Avatar */}
-            <div style={{
-              width: '28px', height: '28px',
-              background: '#4361ee',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '11px', fontWeight: '700', color: '#fff',
-              fontFamily: "'IBM Plex Sans', sans-serif",
-              cursor: 'pointer',
-            }}>{initial}</div>
+            {/* Avatar — opens profile panel */}
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setProfilePanelOpen(v => !v)}
+                style={{
+                  width: '28px', height: '28px',
+                  background: profilePanelOpen ? '#4361ee' : '#4361ee',
+                  border: `1px solid ${profilePanelOpen ? '#6b7eff' : 'transparent'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '11px', fontWeight: '700', color: '#fff',
+                  fontFamily: "'IBM Plex Sans', sans-serif",
+                  cursor: 'pointer',
+                  transition: 'all 0.12s',
+                  outline: 'none',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#6b7eff' }}
+                onMouseLeave={e => { if (!profilePanelOpen) e.currentTarget.style.borderColor = 'transparent' }}
+              >
+                {initial}
+              </button>
+
+              {profilePanelOpen && (
+                <ProfilePanel
+                  onClose={() => setProfilePanelOpen(false)}
+                  onEditProfile={openEditProfile}
+                />
+              )}
+            </div>
           </div>
         </header>
 
         {/* Page content */}
-        <main style={{
-          flex: 1,
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          background: 'transparent',
-        }}>
+        <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: 'transparent' }}>
           <div className="page-transition" key={location.pathname}>
             {children}
           </div>
         </main>
       </div>
+
+      {/* Onboarding / Edit Profile Modal */}
+      {onboardingOpen && (
+        <OnboardingModal
+          isEditMode={isEditMode}
+          initialData={isEditMode ? careerProfile : null}
+          onClose={isEditMode ? () => setOnboardingOpen(false) : undefined}
+          onSuccess={() => setOnboardingOpen(false)}
+        />
+      )}
     </div>
   )
 }

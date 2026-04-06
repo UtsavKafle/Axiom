@@ -6,36 +6,49 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
+  const [careerProfile, setCareerProfile] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
-      if (session?.user) fetchProfile(session.user.id)
+      if (session?.user) fetchAllProfiles(session.user.id)
       else setLoading(false)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
-      if (session?.user) fetchProfile(session.user.id)
-      else { setProfile(null); setLoading(false) }
+      if (session?.user) fetchAllProfiles(session.user.id)
+      else { setProfile(null); setCareerProfile(null); setLoading(false) }
     })
 
     return () => subscription.unsubscribe()
   }, [])
 
-  async function fetchProfile(userId) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
-    setProfile(data)
+  async function fetchAllProfiles(userId) {
+    const [profileRes, careerRes] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', userId).single(),
+      supabase.from('user_profiles').select('*').eq('user_id', userId).single(),
+    ])
+    setProfile(profileRes.data)
+    setCareerProfile(careerRes.data)
     setLoading(false)
   }
 
   async function refreshProfile(userId) {
-    await fetchProfile(userId)
+    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single()
+    setProfile(data)
+  }
+
+  async function refreshCareerProfile() {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.user) return
+    const { data } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .single()
+    setCareerProfile(data)
   }
 
   async function signOut() {
@@ -43,7 +56,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user, profile, careerProfile, loading, signOut, refreshProfile, refreshCareerProfile }}>
       {children}
     </AuthContext.Provider>
   )

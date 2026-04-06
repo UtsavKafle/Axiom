@@ -171,6 +171,57 @@ html, body, #root {
   animation: pageIn 0.25s ease forwards;
 }
 
+/* Onboarding range slider */
+input[type="range"].axiom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #1e1e22;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"].axiom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #4361ee;
+  border: 2px solid #09090b;
+  border-radius: 0;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px #4361ee;
+}
+input[type="range"].axiom-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #4361ee;
+  border: 2px solid #09090b;
+  border-radius: 0;
+  cursor: pointer;
+}
+input[type="range"].axiom-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: linear-gradient(to right, #4361ee var(--slider-pct, 0%), #1e1e22 var(--slider-pct, 0%));
+}
+
+/* Onboarding modal animation */
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-in {
+  animation: modalIn 0.22s ease forwards;
+}
+
+/* Profile panel slide-in */
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.panel-in {
+  animation: panelIn 0.16s ease forwards;
+}
+
 /* Scrollable ticker */
 @keyframes ticker {
   0% { transform: translateX(0); }
