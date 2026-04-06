@@ -149,6 +149,15 @@ export default function InterviewPrep() {
   const [activeDiff, setActiveDiff]       = useState('All')
 
   const [panelQuestion, setPanelQuestion] = useState(null) // question object or null
+  const [studyPlanOpen, setStudyPlanOpen] = useState(() => localStorage.getItem('axiom_study_plan_open') === 'true')
+
+  function toggleStudyPlan() {
+    setStudyPlanOpen(o => {
+      const next = !o
+      localStorage.setItem('axiom_study_plan_open', String(next))
+      return next
+    })
+  }
 
   // ── Fetch questions ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -251,6 +260,30 @@ export default function InterviewPrep() {
     }
   }
 
+  // ── Save AI score to user_progress ──────────────────────────────────────
+  async function handleSaveScore(questionId, score) {
+    if (!user?.id) return
+    const existing = progress[questionId]
+    try {
+      if (existing) {
+        const { data } = await supabase
+          .from('user_progress')
+          .update({ last_score: score, practiced_at: new Date().toISOString() })
+          .eq('id', existing.id)
+          .select().single()
+        if (data) setProgress(p => ({ ...p, [questionId]: data }))
+      } else {
+        const { data } = await supabase
+          .from('user_progress')
+          .insert({ user_id: user.id, question_id: questionId, status: 'in_progress', last_score: score, practiced_at: new Date().toISOString() })
+          .select().single()
+        if (data) setProgress(p => ({ ...p, [questionId]: data }))
+      }
+    } catch (err) {
+      console.error('Failed to save score:', err)
+    }
+  }
+
   // ── Derived: company dropdown list ──────────────────────────────────────
   const companiesList = useMemo(() => {
     const set = new Set()
@@ -261,17 +294,17 @@ export default function InterviewPrep() {
   // ── Derived: stat cards ──────────────────────────────────────────────────
   const stats = useMemo(() => {
     const rows = Object.values(progress)
-    const completed = rows.filter(r => r.status === 'completed')
+    const practiced = rows.filter(r => (r.last_score ?? -1) >= 65)
     const streak = calculateStreak(rows)
-    const completedIds = new Set(completed.map(r => r.question_id))
-    const completedTopics = new Set(
-      questions.filter(q => completedIds.has(q.id)).map(q => q.topic).filter(Boolean)
+    const practicedIds = new Set(practiced.map(r => r.question_id))
+    const practicedTopics = new Set(
+      questions.filter(q => practicedIds.has(q.id)).map(q => q.topic).filter(Boolean)
     )
     const totalTopics = new Set(questions.map(q => q.topic).filter(Boolean)).size
     return [
-      { label: 'Questions Practiced', value: String(completed.length),                          icon: '📝', color: '#4361ee' },
+      { label: 'Questions Practiced', value: String(practiced.length),                          icon: '📝', color: '#4361ee' },
       { label: 'Current Streak',       value: `${streak} day${streak !== 1 ? 's' : ''}`,        icon: '🔥', color: '#f4a400' },
-      { label: 'Topics Covered',       value: `${completedTopics.size} / ${totalTopics}`,        icon: '🗂️', color: '#22c55e' },
+      { label: 'Topics Covered',       value: `${practicedTopics.size} / ${totalTopics}`,        icon: '🗂️', color: '#22c55e' },
       { label: 'Mock Interviews',       value: '0',                                              icon: '🎙️', color: '#4361ee' },
     ]
   }, [progress, questions])
@@ -309,6 +342,62 @@ export default function InterviewPrep() {
   // ────────────────────────────────────────────────────────────────────────
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', overflow: 'hidden' }}>
+
+      {/* Weekly Study Plan — collapsible top band */}
+      <div style={{ flexShrink: 0, borderBottom: '1px solid #1e1e22', background: '#09090b' }}>
+        <button
+          onClick={toggleStudyPlan}
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '10px 16px', background: 'transparent', border: 'none', cursor: 'pointer',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#111113' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600', fontSize: '13px', color: '#f4f4f5' }}>
+              Weekly Study Plan
+            </span>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#4361ee', background: 'rgba(67,97,238,0.08)', padding: '2px 6px', border: '1px solid rgba(67,97,238,0.15)' }}>
+              Apr 2026
+            </span>
+          </div>
+          <span style={{
+            fontFamily: "'Space Mono', monospace", fontSize: '12px', color: '#52525b',
+            display: 'inline-block',
+            transition: 'transform 0.25s ease',
+            transform: studyPlanOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}>▾</span>
+        </button>
+        <div style={{
+          maxHeight: studyPlanOpen ? '160px' : '0',
+          overflow: 'hidden',
+          transition: 'max-height 0.25s ease',
+        }}>
+          <div style={{ padding: '0 16px 14px', display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px' }}>
+            {WEEKLY_PLAN.map((day) => (
+              <div key={day.day} style={{
+                background: day.done ? 'rgba(67,97,238,0.08)' : '#111113',
+                border: `1px solid ${day.done ? 'rgba(67,97,238,0.25)' : '#1e1e22'}`,
+                padding: '10px 8px', textAlign: 'center', position: 'relative',
+              }}>
+                {day.done && (
+                  <div style={{
+                    position: 'absolute', top: '-5px', right: '-5px',
+                    width: '14px', height: '14px', background: '#22c55e',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '8px', color: '#fff', fontWeight: '700',
+                  }}>✓</div>
+                )}
+                <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '700', fontSize: '11px', color: day.done ? '#6b83f0' : '#f4f4f5', marginBottom: '6px' }}>{day.day}</div>
+                {day.tasks.map((task, ti) => (
+                  <div key={ti} style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '10px', color: '#71717a', lineHeight: '1.4', marginBottom: '1px' }}>{task}</div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Stats bar */}
       <div className="animate-in stagger-1" style={{
@@ -559,38 +648,6 @@ export default function InterviewPrep() {
               )
             })}
 
-            {/* Weekly Study Plan */}
-            <div style={{ padding: '20px 16px', borderTop: '1px solid #1e1e22', background: '#09090b' }}>
-              <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600', fontSize: '13px', color: '#f4f4f5', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                Weekly Study Plan
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#4361ee', background: 'rgba(67,97,238,0.08)', padding: '2px 6px', border: '1px solid rgba(67,97,238,0.15)' }}>Apr 2026</span>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px' }}>
-                {WEEKLY_PLAN.map((day) => (
-                  <div key={day.day} style={{
-                    background: day.done ? 'rgba(67,97,238,0.08)' : '#111113',
-                    border: `1px solid ${day.done ? 'rgba(67,97,238,0.25)' : '#1e1e22'}`,
-                    padding: '10px 8px',
-                    textAlign: 'center',
-                    position: 'relative',
-                  }}>
-                    {day.done && (
-                      <div style={{
-                        position: 'absolute', top: '-5px', right: '-5px',
-                        width: '14px', height: '14px',
-                        background: '#22c55e',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '8px', color: '#fff', fontWeight: '700',
-                      }}>✓</div>
-                    )}
-                    <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '700', fontSize: '11px', color: day.done ? '#6b83f0' : '#f4f4f5', marginBottom: '6px' }}>{day.day}</div>
-                    {day.tasks.map((task, ti) => (
-                      <div key={ti} style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '10px', color: '#71717a', lineHeight: '1.4', marginBottom: '1px' }}>{task}</div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
 
@@ -669,10 +726,16 @@ export default function InterviewPrep() {
       {/* Practice panel — slides in over main content */}
       {panelQuestion && (
         <PracticePanel
+          key={panelQuestion.id}
           question={panelQuestion}
           progressRow={progress[panelQuestion.id]}
           onClose={() => setPanelQuestion(null)}
           onMarkComplete={handleMarkComplete}
+          onSaveScore={handleSaveScore}
+          onOpenQuestion={title => {
+            const match = questions.find(q => q.title.toLowerCase() === title.toLowerCase())
+            if (match) openPanel(match)
+          }}
         />
       )}
     </div>

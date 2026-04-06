@@ -157,7 +157,7 @@ function FeedbackCard({ title, score, children, defaultOpen = false, delay = 0 }
 
 // ── Main PracticePanel ────────────────────────────────────────────────────────
 
-export default function PracticePanel({ question, progressRow, onClose, onMarkComplete }) {
+export default function PracticePanel({ question, progressRow, onClose, onMarkComplete, onSaveScore, onOpenQuestion }) {
   const [lang, setLang]                     = useState('python')
   const [code, setCode]                     = useState(STARTER_CODE.python)
   const [consoleLines, setConsoleLines]     = useState(['[ Axiom ] Ready to run your solution...'])
@@ -168,7 +168,7 @@ export default function PracticePanel({ question, progressRow, onClose, onMarkCo
   const consoleRef                          = useRef(null)
 
   const isComplete   = progressRow?.status === 'completed'
-  const canComplete  = feedback !== null && !isComplete
+  const canComplete  = feedback !== null && !isComplete && (feedback?.overall_score ?? 0) >= 65
   const diff         = DIFF_CONFIG[question?.difficulty] || DIFF_CONFIG.Medium
 
   // Escape to close
@@ -223,20 +223,50 @@ export default function PracticePanel({ question, progressRow, onClose, onMarkCo
 
   async function handleSubmit() {
     if (submitting) return
+
+    if (!code.trim()) {
+      setConsoleLines(prev => [...prev, '[ Axiom ] Please write some code before submitting.'])
+      return
+    }
+
     setSubmitting(true)
     setFeedback(null)
     setFeedbackVisible(false)
     setConsoleLines(prev => [...prev, '[ Axiom ] Analyzing your solution...'])
 
-    await new Promise(r => setTimeout(r, 2000))
+    try {
+      const res = await fetch('http://localhost:8000/api/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question_title:      question?.title      ?? '',
+          question_topic:      question?.topic      ?? '',
+          question_difficulty: question?.difficulty ?? '',
+          user_code:           code,
+          language:            LANG_LABELS[lang],
+        }),
+      })
 
-    setFeedback(MOCK_FEEDBACK)
-    setConsoleLines(prev => [
-      ...prev,
-      `[ Axiom ] Analysis complete — Score: ${MOCK_FEEDBACK.overall_score}/100 · ${MOCK_FEEDBACK.verdict}`,
-    ])
-    setSubmitting(false)
-    setTimeout(() => setFeedbackVisible(true), 80)
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`)
+      }
+
+      const data = await res.json()
+      setFeedback(data)
+      onSaveScore?.(question?.id, data.overall_score)
+      setConsoleLines(prev => [
+        ...prev,
+        `[ Axiom ] Review complete.`,
+      ])
+      setSubmitting(false)
+      setTimeout(() => setFeedbackVisible(true), 80)
+    } catch (err) {
+      setSubmitting(false)
+      setConsoleLines(prev => [
+        ...prev,
+        '[ Axiom ] Error: Could not get feedback. Please try again.',
+      ])
+    }
   }
 
   function handleRunCode() {
@@ -310,6 +340,7 @@ export default function PracticePanel({ question, progressRow, onClose, onMarkCo
             <button
               onClick={() => canComplete && onMarkComplete(question.id)}
               disabled={!canComplete}
+              title={feedback !== null && !isComplete && (feedback?.overall_score ?? 0) < 65 ? 'Score 65 or higher to mark as complete' : undefined}
               style={{
                 padding: '6px 14px',
                 background: canComplete ? '#22c55e' : 'rgba(34,197,94,0.06)',
@@ -488,6 +519,7 @@ export default function PracticePanel({ question, progressRow, onClose, onMarkCo
                       borderBottom: i < SIMILAR.length - 1 ? '1px solid #1e1e22' : 'none',
                       cursor: 'pointer', transition: 'opacity 0.1s',
                     }}
+                      onClick={() => onOpenQuestion?.(sq.title)}
                       onMouseEnter={e => e.currentTarget.style.opacity = '0.7'}
                       onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                     >

@@ -1,0 +1,1024 @@
+AXIOM CODE REVIEWER — INTERVIEW QUESTION KNOWLEDGE BASE
+========================================================
+This knowledge base covers the Blind 75 question set.
+For questions outside this list, use model knowledge to evaluate.
+
+---
+
+QUESTION: Two Sum
+DIFFICULTY: Easy
+TOPIC: Arrays
+OPTIMAL APPROACH: Hash Map
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Given an array of integers and a target integer, return the indices of the two numbers that add up to the target. Each input has exactly one solution and you may not use the same element twice.
+EDGE CASES: empty array, single element, negative numbers, duplicate values, target is zero, no valid pair exists
+COMMON MISTAKES: Using nested loops (O(n²)), not storing indices correctly, modifying the array
+
+---
+
+QUESTION: Best Time to Buy and Sell Stock
+DIFFICULTY: Easy
+TOPIC: Arrays
+OPTIMAL APPROACH: Single Pass / Sliding Window
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Given an array of prices where prices[i] is the price on day i, find the maximum profit by choosing one day to buy and a later day to sell. Return 0 if no profit is possible.
+EDGE CASES: all prices decreasing, single element, all same prices, two elements
+COMMON MISTAKES: Not tracking minimum price correctly, allowing sell before buy
+
+---
+
+QUESTION: Contains Duplicate
+DIFFICULTY: Easy
+TOPIC: Arrays
+OPTIMAL APPROACH: Hash Set
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Given an integer array, return true if any value appears at least twice. Return false if every element is distinct.
+EDGE CASES: empty array, single element, all duplicates, all unique
+COMMON MISTAKES: Sorting solution is O(n log n) not optimal, not handling empty array
+
+---
+
+QUESTION: Product of Array Except Self
+DIFFICULTY: Medium
+TOPIC: Arrays
+OPTIMAL APPROACH: Prefix and Suffix Products
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1) excluding output array
+DESCRIPTION: Given an integer array, return an array where each element is the product of all other elements except itself. Must run in O(n) without using division.
+EDGE CASES: array with zeros, single zero, multiple zeros, negative numbers, single element
+COMMON MISTAKES: Using division (not allowed), not handling zeros, O(n²) nested loop
+
+---
+
+QUESTION: Maximum Subarray
+DIFFICULTY: Medium
+TOPIC: Arrays
+OPTIMAL APPROACH: Kadane's Algorithm
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Given an integer array, find the contiguous subarray with the largest sum and return its sum.
+EDGE CASES: all negative numbers, single element, all zeros, mixed positive and negative
+COMMON MISTAKES: Not resetting current sum when it goes negative, not handling all negative case
+
+---
+
+QUESTION: Maximum Product Subarray
+DIFFICULTY: Medium
+TOPIC: Arrays
+OPTIMAL APPROACH: Dynamic Programming tracking max and min
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Find the contiguous subarray that has the largest product and return the product.
+EDGE CASES: array with zeros, negative numbers, single element, all negatives
+COMMON MISTAKES: Not tracking minimum product (needed for negative × negative), not handling zeros
+
+---
+
+QUESTION: Find Minimum in Rotated Sorted Array
+DIFFICULTY: Medium
+TOPIC: Arrays
+OPTIMAL APPROACH: Binary Search
+TIME COMPLEXITY: O(log n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Find the minimum element in a rotated sorted array with unique elements.
+EDGE CASES: not rotated array, single element, two elements, rotated by one
+COMMON MISTAKES: Linear scan is O(n) not optimal, off by one errors in binary search
+
+---
+
+QUESTION: Search in Rotated Sorted Array
+DIFFICULTY: Medium
+TOPIC: Arrays
+OPTIMAL APPROACH: Modified Binary Search
+TIME COMPLEXITY: O(log n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Search for a target value in a rotated sorted array. Return its index or -1 if not found.
+EDGE CASES: target not in array, single element, not rotated, target at pivot
+COMMON MISTAKES: Not determining which half is sorted before deciding where to search
+
+---
+
+QUESTION: 3Sum
+DIFFICULTY: Medium
+TOPIC: Arrays
+OPTIMAL APPROACH: Sort + Two Pointers
+TIME COMPLEXITY: O(n²)
+SPACE COMPLEXITY: O(1) excluding output
+DESCRIPTION: Find all unique triplets in the array that sum to zero.
+EDGE CASES: fewer than 3 elements, all zeros, all positives, all negatives, duplicates
+COMMON MISTAKES: Not skipping duplicates, O(n³) brute force, not sorting first
+
+---
+
+QUESTION: Container With Most Water
+DIFFICULTY: Medium
+TOPIC: Arrays
+OPTIMAL APPROACH: Two Pointers
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Given n vertical lines, find two lines that together with the x-axis form a container holding the most water.
+EDGE CASES: two elements, all same height, decreasing heights
+COMMON MISTAKES: O(n²) brute force, moving the wrong pointer
+
+---
+
+QUESTION: Sum of Two Integers
+DIFFICULTY: Medium
+TOPIC: Binary
+OPTIMAL APPROACH: Bit Manipulation (XOR and AND with shift)
+TIME COMPLEXITY: O(1)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Calculate sum of two integers without using + or - operators.
+EDGE CASES: negative numbers, zero, overflow in some languages
+COMMON MISTAKES: Using addition operators, not handling carry correctly
+
+---
+
+QUESTION: Number of 1 Bits
+DIFFICULTY: Easy
+TOPIC: Binary
+OPTIMAL APPROACH: Bit Manipulation (n & n-1)
+TIME COMPLEXITY: O(1)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Return the number of 1 bits in the binary representation of an unsigned integer.
+EDGE CASES: zero, all ones, single bit
+COMMON MISTAKES: Using string conversion (less efficient), not handling unsigned interpretation
+
+---
+
+QUESTION: Counting Bits
+DIFFICULTY: Easy
+TOPIC: Binary
+OPTIMAL APPROACH: Dynamic Programming with bit trick
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Return an array of the number of 1 bits for every number from 0 to n.
+EDGE CASES: n is zero, n is one
+COMMON MISTAKES: Calling popcount for each number (O(n log n)), not using DP relationship
+
+---
+
+QUESTION: Missing Number
+DIFFICULTY: Easy
+TOPIC: Binary
+OPTIMAL APPROACH: XOR or Gauss Sum Formula
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Find the missing number in an array containing n distinct numbers from 0 to n.
+EDGE CASES: missing 0, missing n, single element array
+COMMON MISTAKES: Using a hash set (O(n) space), sorting (O(n log n))
+
+---
+
+QUESTION: Reverse Bits
+DIFFICULTY: Easy
+TOPIC: Binary
+OPTIMAL APPROACH: Bit Manipulation with shift
+TIME COMPLEXITY: O(1)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Reverse the bits of a given 32-bit unsigned integer.
+EDGE CASES: all zeros, all ones, single bit set
+COMMON MISTAKES: Not processing all 32 bits, using string reversal
+
+---
+
+QUESTION: Climbing Stairs
+DIFFICULTY: Easy
+TOPIC: Dynamic Programming
+OPTIMAL APPROACH: Dynamic Programming (Fibonacci pattern)
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Count distinct ways to climb n stairs taking 1 or 2 steps at a time.
+EDGE CASES: n=1, n=2, large n
+COMMON MISTAKES: Exponential recursion without memoization, using O(n) space when O(1) suffices
+
+---
+
+QUESTION: Coin Change
+DIFFICULTY: Medium
+TOPIC: Dynamic Programming
+OPTIMAL APPROACH: Bottom-up Dynamic Programming
+TIME COMPLEXITY: O(amount × coins)
+SPACE COMPLEXITY: O(amount)
+DESCRIPTION: Find minimum number of coins to make up a given amount. Return -1 if impossible.
+EDGE CASES: amount is 0, no valid combination, single coin type, coin larger than amount
+COMMON MISTAKES: Greedy approach (doesn't always work), not initializing DP array correctly
+
+---
+
+QUESTION: Longest Increasing Subsequence
+DIFFICULTY: Medium
+TOPIC: Dynamic Programming
+OPTIMAL APPROACH: Binary Search with patience sorting
+TIME COMPLEXITY: O(n log n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Find the length of the longest strictly increasing subsequence.
+EDGE CASES: single element, all same, all decreasing, all increasing
+COMMON MISTAKES: O(n²) DP is correct but not optimal, confusing subsequence with subarray
+
+---
+
+QUESTION: Longest Common Subsequence
+DIFFICULTY: Medium
+TOPIC: Dynamic Programming
+OPTIMAL APPROACH: 2D Dynamic Programming
+TIME COMPLEXITY: O(m × n)
+SPACE COMPLEXITY: O(m × n) or O(min(m,n)) optimized
+DESCRIPTION: Find length of longest common subsequence between two strings.
+EDGE CASES: empty string, identical strings, no common characters
+COMMON MISTAKES: Confusing with longest common substring, not building DP table correctly
+
+---
+
+QUESTION: Word Break
+DIFFICULTY: Medium
+TOPIC: Dynamic Programming
+OPTIMAL APPROACH: Dynamic Programming with hash set
+TIME COMPLEXITY: O(n²)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Determine if a string can be segmented into one or more dictionary words.
+EDGE CASES: empty string, single character, word used multiple times, no valid segmentation
+COMMON MISTAKES: Pure recursion without memoization, not using hash set for O(1) lookup
+
+---
+
+QUESTION: Combination Sum IV
+DIFFICULTY: Medium
+TOPIC: Dynamic Programming
+OPTIMAL APPROACH: Bottom-up Dynamic Programming
+TIME COMPLEXITY: O(target × nums.length)
+SPACE COMPLEXITY: O(target)
+DESCRIPTION: Find number of combinations (order matters) that add up to target using given numbers.
+EDGE CASES: target is 0, no valid combinations, single number equals target
+COMMON MISTAKES: Confusing with combination sum (order doesn't matter there)
+
+---
+
+QUESTION: House Robber
+DIFFICULTY: Medium
+TOPIC: Dynamic Programming
+OPTIMAL APPROACH: Dynamic Programming (two variables)
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Find maximum amount you can rob without robbing two adjacent houses.
+EDGE CASES: single house, two houses, all same values
+COMMON MISTAKES: Using O(n) space when O(1) suffices, off by one indexing
+
+---
+
+QUESTION: House Robber II
+DIFFICULTY: Medium
+TOPIC: Dynamic Programming
+OPTIMAL APPROACH: Run House Robber I twice on two subarrays
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Same as House Robber but houses arranged in a circle (first and last are adjacent).
+EDGE CASES: single house, two houses, three houses
+COMMON MISTAKES: Not recognizing it reduces to two linear House Robber problems
+
+---
+
+QUESTION: Decode Ways
+DIFFICULTY: Medium
+TOPIC: Dynamic Programming
+OPTIMAL APPROACH: Dynamic Programming
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Count number of ways to decode a string of digits where A=1, B=2, ..., Z=26.
+EDGE CASES: leading zero, consecutive zeros, single digit, invalid sequences like 30
+COMMON MISTAKES: Not handling leading zeros, not checking two-digit validity (10-26 only)
+
+---
+
+QUESTION: Unique Paths
+DIFFICULTY: Medium
+TOPIC: Dynamic Programming
+OPTIMAL APPROACH: Dynamic Programming or Math (combinatorics)
+TIME COMPLEXITY: O(m × n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Count unique paths from top-left to bottom-right of an m×n grid moving only right or down.
+EDGE CASES: 1×1 grid, single row, single column
+COMMON MISTAKES: Not optimizing space, recursive solution without memoization
+
+---
+
+QUESTION: Jump Game
+DIFFICULTY: Medium
+TOPIC: Dynamic Programming
+OPTIMAL APPROACH: Greedy
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Determine if you can reach the last index given max jump lengths at each position.
+EDGE CASES: single element, zero at start, zeros in middle, can always reach end
+COMMON MISTAKES: DP approach works but greedy is optimal, not tracking max reachable index
+
+---
+
+QUESTION: Clone Graph
+DIFFICULTY: Medium
+TOPIC: Graphs
+OPTIMAL APPROACH: BFS or DFS with Hash Map
+TIME COMPLEXITY: O(V + E)
+SPACE COMPLEXITY: O(V)
+DESCRIPTION: Return a deep copy of a connected undirected graph.
+EDGE CASES: null input, single node with no neighbors, graph with cycles
+COMMON MISTAKES: Not using a visited map causing infinite loops with cycles
+
+---
+
+QUESTION: Course Schedule
+DIFFICULTY: Medium
+TOPIC: Graphs
+OPTIMAL APPROACH: Topological Sort (DFS cycle detection)
+TIME COMPLEXITY: O(V + E)
+SPACE COMPLEXITY: O(V + E)
+DESCRIPTION: Determine if you can finish all courses given a list of prerequisites.
+EDGE CASES: no prerequisites, single course, all courses depend on each other
+COMMON MISTAKES: Not detecting cycles correctly, confusing directed and undirected graphs
+
+---
+
+QUESTION: Pacific Atlantic Water Flow
+DIFFICULTY: Medium
+TOPIC: Graphs
+OPTIMAL APPROACH: Reverse BFS/DFS from both oceans
+TIME COMPLEXITY: O(m × n)
+SPACE COMPLEXITY: O(m × n)
+DESCRIPTION: Find cells that can flow water to both the Pacific and Atlantic oceans.
+EDGE CASES: single cell, all same height, entire grid flows to both
+COMMON MISTAKES: Forward simulation is less efficient, not doing reverse flow from borders
+
+---
+
+QUESTION: Number of Islands
+DIFFICULTY: Medium
+TOPIC: Graphs
+OPTIMAL APPROACH: DFS or BFS with visited marking
+TIME COMPLEXITY: O(m × n)
+SPACE COMPLEXITY: O(m × n)
+DESCRIPTION: Count the number of islands (groups of connected 1s) in a 2D binary grid.
+EDGE CASES: empty grid, all water, all land, single cell
+COMMON MISTAKES: Not marking visited cells, not handling grid boundaries
+
+---
+
+QUESTION: Longest Consecutive Sequence
+DIFFICULTY: Medium
+TOPIC: Graphs
+OPTIMAL APPROACH: Hash Set
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Find the length of the longest consecutive elements sequence in unsorted array.
+EDGE CASES: empty array, single element, all consecutive, all same
+COMMON MISTAKES: Sorting solution is O(n log n) not optimal, checking every element as sequence start
+
+---
+
+QUESTION: Alien Dictionary
+DIFFICULTY: Hard
+TOPIC: Graphs
+OPTIMAL APPROACH: Topological Sort (BFS Kahn's algorithm)
+TIME COMPLEXITY: O(C) where C is total characters
+SPACE COMPLEXITY: O(1) since at most 26 characters
+DESCRIPTION: Derive the order of letters in an alien language from a sorted dictionary of words.
+EDGE CASES: single word, all same characters, contradictory ordering (cycle), prefix words out of order
+COMMON MISTAKES: Not detecting cycles, not handling prefix edge case correctly
+
+---
+
+QUESTION: Graph Valid Tree
+DIFFICULTY: Medium
+TOPIC: Graphs
+OPTIMAL APPROACH: Union Find or DFS
+TIME COMPLEXITY: O(V + E)
+SPACE COMPLEXITY: O(V)
+DESCRIPTION: Determine if n nodes and given edges form a valid tree (connected, no cycles).
+EDGE CASES: single node no edges, disconnected components, self loops
+COMMON MISTAKES: Not checking both conditions (connected AND acyclic)
+
+---
+
+QUESTION: Number of Connected Components
+DIFFICULTY: Medium
+TOPIC: Graphs
+OPTIMAL APPROACH: Union Find or DFS
+TIME COMPLEXITY: O(V + E)
+SPACE COMPLEXITY: O(V)
+DESCRIPTION: Count connected components in an undirected graph with n nodes.
+EDGE CASES: no edges, all connected, single node
+COMMON MISTAKES: Not tracking visited nodes, counting edges instead of components
+
+---
+
+QUESTION: Insert Interval
+DIFFICULTY: Medium
+TOPIC: Intervals
+OPTIMAL APPROACH: Linear Scan with merge logic
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Insert a new interval into a sorted non-overlapping interval list and merge if necessary.
+EDGE CASES: empty list, insert at beginning, insert at end, new interval covers all existing
+COMMON MISTAKES: Off by one in overlap condition, not handling non-overlapping intervals before and after
+
+---
+
+QUESTION: Merge Intervals
+DIFFICULTY: Medium
+TOPIC: Intervals
+OPTIMAL APPROACH: Sort then linear merge
+TIME COMPLEXITY: O(n log n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Merge all overlapping intervals and return the result.
+EDGE CASES: single interval, no overlaps, all overlapping, touching intervals
+COMMON MISTAKES: Not sorting first, incorrect overlap condition (use > not >=)
+
+---
+
+QUESTION: Non-overlapping Intervals
+DIFFICULTY: Medium
+TOPIC: Intervals
+OPTIMAL APPROACH: Greedy (sort by end time)
+TIME COMPLEXITY: O(n log n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Find minimum number of intervals to remove to make rest non-overlapping.
+EDGE CASES: single interval, no overlaps, all overlapping
+COMMON MISTAKES: Sorting by start instead of end time, greedy choice is wrong
+
+---
+
+QUESTION: Meeting Rooms
+DIFFICULTY: Easy
+TOPIC: Intervals
+OPTIMAL APPROACH: Sort by start time
+TIME COMPLEXITY: O(n log n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Determine if a person can attend all meetings with no time overlap.
+EDGE CASES: single meeting, no meetings, back to back meetings (not overlapping)
+COMMON MISTAKES: Not sorting first, wrong overlap condition
+
+---
+
+QUESTION: Meeting Rooms II
+DIFFICULTY: Medium
+TOPIC: Intervals
+OPTIMAL APPROACH: Min Heap or Sort start and end times separately
+TIME COMPLEXITY: O(n log n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Find minimum number of conference rooms required for all meetings.
+EDGE CASES: single meeting, all same time, sequential meetings
+COMMON MISTAKES: Not using heap to track earliest ending room, two pointer approach confusion
+
+---
+
+QUESTION: Reverse Linked List
+DIFFICULTY: Easy
+TOPIC: Linked List
+OPTIMAL APPROACH: Iterative with three pointers
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Reverse a singly linked list.
+EDGE CASES: empty list, single node, two nodes
+COMMON MISTAKES: Recursive solution uses O(n) stack space, losing next pointer before reassigning
+
+---
+
+QUESTION: Linked List Cycle
+DIFFICULTY: Easy
+TOPIC: Linked List
+OPTIMAL APPROACH: Floyd's Cycle Detection (slow and fast pointers)
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Detect if a linked list has a cycle.
+EDGE CASES: empty list, single node, cycle at tail, entire list is cycle
+COMMON MISTAKES: Using hash set is O(n) space, not handling null checks
+
+---
+
+QUESTION: Merge Two Sorted Lists
+DIFFICULTY: Easy
+TOPIC: Linked List
+OPTIMAL APPROACH: Iterative with dummy head node
+TIME COMPLEXITY: O(m + n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Merge two sorted linked lists into one sorted list.
+EDGE CASES: one or both lists empty, lists of different lengths
+COMMON MISTAKES: Recursive solution uses O(m+n) stack space, not handling remaining nodes
+
+---
+
+QUESTION: Merge K Sorted Lists
+DIFFICULTY: Hard
+TOPIC: Linked List
+OPTIMAL APPROACH: Min Heap (Priority Queue)
+TIME COMPLEXITY: O(n log k) where n is total nodes and k is number of lists
+SPACE COMPLEXITY: O(k)
+DESCRIPTION: Merge k sorted linked lists into one sorted list.
+EDGE CASES: empty input, single list, lists with single nodes, all empty lists
+COMMON MISTAKES: Merging one by one is O(kn), not handling empty lists in heap
+
+---
+
+QUESTION: Remove Nth Node From End
+DIFFICULTY: Medium
+TOPIC: Linked List
+OPTIMAL APPROACH: Two Pointers (one pass)
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Remove the nth node from the end of a linked list in one pass.
+EDGE CASES: remove head (n equals length), single node, n equals 1
+COMMON MISTAKES: Two pass solution works but not optimal, dummy head simplifies edge cases
+
+---
+
+QUESTION: Reorder List
+DIFFICULTY: Medium
+TOPIC: Linked List
+OPTIMAL APPROACH: Find middle + Reverse second half + Merge
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Reorder list from L0→L1→...→Ln to L0→Ln→L1→Ln-1→L2→Ln-2...
+EDGE CASES: single node, two nodes, even and odd length lists
+COMMON MISTAKES: Using array to store nodes (O(n) space), not reversing second half in place
+
+---
+
+QUESTION: Set Matrix Zeroes
+DIFFICULTY: Medium
+TOPIC: Matrix
+OPTIMAL APPROACH: Use first row and column as markers
+TIME COMPLEXITY: O(m × n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Set entire rows and columns to zero if an element is zero, in place.
+EDGE CASES: no zeros, all zeros, zero in first row/column
+COMMON MISTAKES: Using extra matrix (O(mn) space), modifying while iterating causing cascade
+
+---
+
+QUESTION: Spiral Matrix
+DIFFICULTY: Medium
+TOPIC: Matrix
+OPTIMAL APPROACH: Layer by layer traversal with boundary tracking
+TIME COMPLEXITY: O(m × n)
+SPACE COMPLEXITY: O(1) excluding output
+DESCRIPTION: Return all elements of a matrix in spiral order.
+EDGE CASES: single row, single column, single element, non-square matrix
+COMMON MISTAKES: Off by one in boundary conditions, not shrinking boundaries after each side
+
+---
+
+QUESTION: Rotate Image
+DIFFICULTY: Medium
+TOPIC: Matrix
+OPTIMAL APPROACH: Transpose then reverse each row
+TIME COMPLEXITY: O(n²)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Rotate an n×n matrix 90 degrees clockwise in place.
+EDGE CASES: 1×1 matrix, 2×2 matrix
+COMMON MISTAKES: Using extra matrix (O(n²) space), wrong rotation direction
+
+---
+
+QUESTION: Word Search
+DIFFICULTY: Medium
+TOPIC: Matrix
+OPTIMAL APPROACH: DFS with backtracking
+TIME COMPLEXITY: O(m × n × 4^L) where L is word length
+SPACE COMPLEXITY: O(L) for recursion stack
+DESCRIPTION: Determine if a word exists in a grid of characters by connecting adjacent cells.
+EDGE CASES: word longer than grid, single character word, word not in grid
+COMMON MISTAKES: Not marking cells as visited during DFS, not restoring on backtrack
+
+---
+
+QUESTION: Longest Substring Without Repeating Characters
+DIFFICULTY: Medium
+TOPIC: Strings
+OPTIMAL APPROACH: Sliding Window with Hash Map
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(min(m, n)) where m is charset size
+DESCRIPTION: Find the length of the longest substring without repeating characters.
+EDGE CASES: empty string, all same characters, all unique, single character
+COMMON MISTAKES: Not updating left pointer to max of current and last seen position + 1
+
+---
+
+QUESTION: Longest Repeating Character Replacement
+DIFFICULTY: Medium
+TOPIC: Strings
+OPTIMAL APPROACH: Sliding Window
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Find longest substring with same letters after at most k character replacements.
+EDGE CASES: k equals string length, all same characters, k is 0
+COMMON MISTAKES: Shrinking window when count is stale (not needed for max length), recalculating max unnecessarily
+
+---
+
+QUESTION: Minimum Window Substring
+DIFFICULTY: Hard
+TOPIC: Strings
+OPTIMAL APPROACH: Sliding Window with two Hash Maps
+TIME COMPLEXITY: O(s + t)
+SPACE COMPLEXITY: O(s + t)
+DESCRIPTION: Find the minimum window in string s that contains all characters of string t.
+EDGE CASES: t longer than s, t not in s, s equals t, duplicate characters in t
+COMMON MISTAKES: Not handling duplicate characters in t, expanding instead of contracting when valid
+
+---
+
+QUESTION: Valid Anagram
+DIFFICULTY: Easy
+TOPIC: Strings
+OPTIMAL APPROACH: Character frequency count or sorting
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1) since at most 26 characters
+DESCRIPTION: Determine if two strings are anagrams of each other.
+EDGE CASES: empty strings, different lengths, same characters different counts, unicode
+COMMON MISTAKES: Sorting is O(n log n), not handling different lengths first
+
+---
+
+QUESTION: Group Anagrams
+DIFFICULTY: Medium
+TOPIC: Strings
+OPTIMAL APPROACH: Hash Map with sorted string or character count as key
+TIME COMPLEXITY: O(n × k log k) where k is max string length
+SPACE COMPLEXITY: O(n × k)
+DESCRIPTION: Group strings that are anagrams of each other.
+EDGE CASES: empty input, single string, all same strings, no anagrams
+COMMON MISTAKES: Using sorted string key is simpler than count array key
+
+---
+
+QUESTION: Valid Parentheses
+DIFFICULTY: Easy
+TOPIC: Strings
+OPTIMAL APPROACH: Stack
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Determine if a string of brackets is valid (properly opened and closed in order).
+EDGE CASES: empty string, single bracket, only open, only close, nested mixed
+COMMON MISTAKES: Not checking stack is empty at end, not matching correct closing bracket
+
+---
+
+QUESTION: Valid Palindrome
+DIFFICULTY: Easy
+TOPIC: Strings
+OPTIMAL APPROACH: Two Pointers
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Determine if a string is a palindrome considering only alphanumeric characters.
+EDGE CASES: empty string, single character, all non-alphanumeric, spaces only
+COMMON MISTAKES: Creating new string (O(n) space), not skipping non-alphanumeric correctly
+
+---
+
+QUESTION: Longest Palindromic Substring
+DIFFICULTY: Medium
+TOPIC: Strings
+OPTIMAL APPROACH: Expand Around Center
+TIME COMPLEXITY: O(n²)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Find the longest palindromic substring in a string.
+EDGE CASES: single character, all same, even and odd length palindromes, no palindrome longer than 1
+COMMON MISTAKES: Not handling both even and odd length centers, DP solution uses O(n²) space
+
+---
+
+QUESTION: Palindromic Substrings
+DIFFICULTY: Medium
+TOPIC: Strings
+OPTIMAL APPROACH: Expand Around Center
+TIME COMPLEXITY: O(n²)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Count the number of palindromic substrings in a string.
+EDGE CASES: single character, all same characters, no palindromes longer than 1
+COMMON MISTAKES: Double counting, not handling both even and odd centers
+
+---
+
+QUESTION: Encode and Decode Strings
+DIFFICULTY: Medium
+TOPIC: Strings
+OPTIMAL APPROACH: Length prefix encoding
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Design algorithm to encode list of strings to single string and decode back.
+EDGE CASES: empty list, strings with special characters, empty strings in list
+COMMON MISTAKES: Using delimiter that might appear in strings, not encoding length correctly
+
+---
+
+QUESTION: Maximum Depth of Binary Tree
+DIFFICULTY: Easy
+TOPIC: Trees
+OPTIMAL APPROACH: DFS recursive or BFS iterative
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(h) where h is height
+DESCRIPTION: Find the maximum depth of a binary tree.
+EDGE CASES: empty tree, single node, all left, all right, balanced
+COMMON MISTAKES: Off by one in depth counting, confusing depth with height
+
+---
+
+QUESTION: Same Tree
+DIFFICULTY: Easy
+TOPIC: Trees
+OPTIMAL APPROACH: DFS recursive comparison
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(h)
+DESCRIPTION: Check if two binary trees have the same structure and node values.
+EDGE CASES: both null, one null, single nodes, different values same structure
+COMMON MISTAKES: Not handling null cases first, comparing references instead of values
+
+---
+
+QUESTION: Invert Binary Tree
+DIFFICULTY: Easy
+TOPIC: Trees
+OPTIMAL APPROACH: DFS recursive swap
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(h)
+DESCRIPTION: Invert a binary tree (mirror it).
+EDGE CASES: empty tree, single node, only left children, only right children
+COMMON MISTAKES: Swapping before recursing without returning correct result
+
+---
+
+QUESTION: Binary Tree Maximum Path Sum
+DIFFICULTY: Hard
+TOPIC: Trees
+OPTIMAL APPROACH: DFS with global maximum tracking
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(h)
+DESCRIPTION: Find the maximum path sum in a binary tree where path can start and end anywhere.
+EDGE CASES: all negative values, single node, path through root, path not through root
+COMMON MISTAKES: Not handling all negative case, confusing path through node vs path including both children
+
+---
+
+QUESTION: Binary Tree Level Order Traversal
+DIFFICULTY: Medium
+TOPIC: Trees
+OPTIMAL APPROACH: BFS with queue
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Return level order traversal of binary tree node values as list of lists.
+EDGE CASES: empty tree, single node, complete binary tree
+COMMON MISTAKES: Not tracking level boundaries, using DFS instead of BFS
+
+---
+
+QUESTION: Serialize and Deserialize Binary Tree
+DIFFICULTY: Hard
+TOPIC: Trees
+OPTIMAL APPROACH: BFS or DFS with null markers
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Design algorithm to serialize binary tree to string and deserialize back.
+EDGE CASES: empty tree, single node, complete tree, skewed tree
+COMMON MISTAKES: Not handling null nodes in serialization, delimiter issues
+
+---
+
+QUESTION: Subtree of Another Tree
+DIFFICULTY: Easy
+TOPIC: Trees
+OPTIMAL APPROACH: DFS with Same Tree check
+TIME COMPLEXITY: O(m × n)
+SPACE COMPLEXITY: O(h)
+DESCRIPTION: Check if one tree is a subtree of another tree.
+EDGE CASES: both same tree, subtree is null, subtree larger than main tree
+COMMON MISTAKES: Not checking structural equality recursively, confusing with subpath
+
+---
+
+QUESTION: Construct Tree from Preorder and Inorder
+DIFFICULTY: Medium
+TOPIC: Trees
+OPTIMAL APPROACH: Recursive with Hash Map for inorder indices
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Build binary tree from preorder and inorder traversal arrays.
+EDGE CASES: single node, all left children, all right children
+COMMON MISTAKES: O(n²) solution without hash map, wrong index calculations
+
+---
+
+QUESTION: Validate Binary Search Tree
+DIFFICULTY: Medium
+TOPIC: Trees
+OPTIMAL APPROACH: DFS with min/max bounds
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(h)
+DESCRIPTION: Determine if a binary tree is a valid BST.
+EDGE CASES: single node, all left, all right, duplicate values (invalid for BST)
+COMMON MISTAKES: Only checking parent-child relationship (not entire subtree bounds)
+
+---
+
+QUESTION: Kth Smallest Element in BST
+DIFFICULTY: Medium
+TOPIC: Trees
+OPTIMAL APPROACH: Inorder traversal (iterative for O(h) space)
+TIME COMPLEXITY: O(h + k)
+SPACE COMPLEXITY: O(h)
+DESCRIPTION: Find the kth smallest element in a BST.
+EDGE CASES: k equals 1, k equals n, single node
+COMMON MISTAKES: Full inorder traversal then index (O(n) unnecessary), not using BST property
+
+---
+
+QUESTION: Lowest Common Ancestor of BST
+DIFFICULTY: Medium
+TOPIC: Trees
+OPTIMAL APPROACH: Iterative BST traversal
+TIME COMPLEXITY: O(h)
+SPACE COMPLEXITY: O(1)
+DESCRIPTION: Find the lowest common ancestor of two nodes in a BST.
+EDGE CASES: one node is ancestor of other, both same node, root is LCA
+COMMON MISTAKES: Using general LCA algorithm (ignores BST property), recursive uses O(h) space
+
+---
+
+QUESTION: Implement Trie
+DIFFICULTY: Medium
+TOPIC: Trees
+OPTIMAL APPROACH: Array or Hash Map of children nodes
+TIME COMPLEXITY: O(m) per operation where m is word length
+SPACE COMPLEXITY: O(total characters)
+DESCRIPTION: Implement a trie with insert, search, and startsWith methods.
+EDGE CASES: empty string, single character, prefix equals full word, search after delete
+COMMON MISTAKES: Not marking end of word node, confusing search with startsWith
+
+---
+
+QUESTION: Design Add and Search Words
+DIFFICULTY: Medium
+TOPIC: Trees
+OPTIMAL APPROACH: Trie with DFS for wildcard
+TIME COMPLEXITY: O(m) for add, O(26^m) worst case for search with wildcards
+SPACE COMPLEXITY: O(total characters)
+DESCRIPTION: Design data structure supporting adding words and searching with '.' wildcard.
+EDGE CASES: all wildcards, no wildcards, word not in trie, prefix only
+COMMON MISTAKES: Not handling wildcard recursively through all children
+
+---
+
+QUESTION: Word Search II
+DIFFICULTY: Hard
+TOPIC: Trees
+OPTIMAL APPROACH: Trie + DFS backtracking
+TIME COMPLEXITY: O(m × n × 4 × 3^(L-1)) where L is max word length
+SPACE COMPLEXITY: O(total characters in words)
+DESCRIPTION: Find all words from a dictionary that exist in a 2D board.
+EDGE CASES: empty board, empty word list, no words found, duplicate words
+COMMON MISTAKES: Running separate DFS per word (TLE), not removing found words from trie
+
+---
+
+QUESTION: Top K Frequent Elements
+DIFFICULTY: Medium
+TOPIC: Heap
+OPTIMAL APPROACH: Bucket Sort or Min Heap
+TIME COMPLEXITY: O(n) bucket sort or O(n log k) heap
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Return the k most frequent elements from an array.
+EDGE CASES: k equals array length, all same frequency, single element
+COMMON MISTAKES: Sorting full frequency map is O(n log n), not handling ties
+
+---
+
+QUESTION: Find Median from Data Stream
+DIFFICULTY: Hard
+TOPIC: Heap
+OPTIMAL APPROACH: Two Heaps (max heap for lower half, min heap for upper half)
+TIME COMPLEXITY: O(log n) per add, O(1) per find
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Find the median of a stream of numbers with efficient add and find operations.
+EDGE CASES: single number, even count, odd count, duplicate numbers
+COMMON MISTAKES: Sorting on each call is O(n log n), not balancing heaps after each insert
+
+---
+
+QUESTION: Design URL Shortener
+DIFFICULTY: Medium
+TOPIC: System Design
+OPTIMAL APPROACH: Hash Map with base62 encoding, consider distributed ID generation
+TIME COMPLEXITY: O(1) for encode/decode
+SPACE COMPLEXITY: O(n)
+DESCRIPTION: Design a URL shortening service like bit.ly that maps long URLs to short codes.
+KEY CONCEPTS: Base62 encoding, hash collisions, database design, caching, rate limiting
+CONSIDERATIONS: Scale (billions of URLs), redirect latency, analytics, custom aliases, expiration
+COMMON MISTAKES: Not considering hash collisions, not discussing scale and caching
+
+---
+
+QUESTION: Design Twitter
+DIFFICULTY: Hard
+TOPIC: System Design
+OPTIMAL APPROACH: Fan-out on write for small accounts, fan-out on read for celebrities
+TIME COMPLEXITY: O(1) post tweet, O(n) generate feed
+SPACE COMPLEXITY: O(tweets + follows)
+DESCRIPTION: Design simplified Twitter with posting tweets, following users, and news feed.
+KEY CONCEPTS: Fan-out architecture, celebrity problem, timeline generation, caching
+CONSIDERATIONS: Read vs write heavy, sharding user data, ranking algorithm, notifications
+COMMON MISTAKES: Not discussing the celebrity/hotspot problem, ignoring caching layer
+
+---
+
+QUESTION: Design Rate Limiter
+DIFFICULTY: Medium
+TOPIC: System Design
+OPTIMAL APPROACH: Token bucket or sliding window log algorithm
+TIME COMPLEXITY: O(1) per request
+SPACE COMPLEXITY: O(n) where n is number of users
+DESCRIPTION: Design a rate limiter to control requests per user within a time window.
+KEY CONCEPTS: Token bucket, leaky bucket, fixed window, sliding window, Redis for distributed
+CONSIDERATIONS: Distributed systems, race conditions, different limits per endpoint
+COMMON MISTAKES: Fixed window allows burst at boundary, not discussing distributed coordination
+
+---
+
+QUESTION: Design Distributed Cache
+DIFFICULTY: Hard
+TOPIC: System Design
+OPTIMAL APPROACH: Consistent hashing with replication
+TIME COMPLEXITY: O(1) average get/set
+SPACE COMPLEXITY: O(capacity)
+DESCRIPTION: Design a distributed caching system like Redis or Memcached.
+KEY CONCEPTS: Consistent hashing, eviction policies (LRU), replication, cache invalidation
+CONSIDERATIONS: Cache stampede, hot keys, TTL, write-through vs write-back, consistency
+COMMON MISTAKES: Not discussing eviction policy, ignoring distributed coordination
+
+---
+
+QUESTION: Design Notification System
+DIFFICULTY: Medium
+TOPIC: System Design
+OPTIMAL APPROACH: Message queue with multiple delivery channels
+TIME COMPLEXITY: O(1) to enqueue, O(subscribers) to deliver
+SPACE COMPLEXITY: O(pending notifications)
+DESCRIPTION: Design a push notification system for millions of users across iOS, Android, email.
+KEY CONCEPTS: Message queues, pub/sub, delivery guarantees, retry logic, user preferences
+CONSIDERATIONS: At-least-once delivery, notification throttling, user opt-out, analytics
+COMMON MISTAKES: Not discussing failure handling and retries, ignoring scale of fan-out
+
+---
+
+QUESTION: Tell me about yourself
+DIFFICULTY: Easy
+TOPIC: Behavioral
+OPTIMAL APPROACH: Present-Past-Future structure or Current-Achievement-Goal format
+DESCRIPTION: Classic opening interview question about your background and goals.
+KEY CONCEPTS: Concise storytelling, relevance to role, enthusiasm, trajectory narrative
+TIPS: Keep to 2 minutes, tailor to the role, end with why you want this specific position
+COMMON MISTAKES: Too long, too short, reading from resume, not connecting to the role
+
+---
+
+QUESTION: Tell me about a time you failed
+DIFFICULTY: Medium
+TOPIC: Behavioral
+OPTIMAL APPROACH: STAR method (Situation Task Action Result) with genuine reflection
+DESCRIPTION: Demonstrate self-awareness and ability to learn from mistakes.
+KEY CONCEPTS: Ownership, growth mindset, specific example, what you learned and changed
+TIPS: Choose a real failure, show what changed afterward, avoid blaming others
+COMMON MISTAKES: Humble brag disguised as failure, no genuine lesson learned, too vague
+
+---
+
+QUESTION: Why do you want to work here
+DIFFICULTY: Easy
+TOPIC: Behavioral
+OPTIMAL APPROACH: Research-based specific answer connecting personal goals to company mission
+DESCRIPTION: Show genuine interest in the company beyond generic enthusiasm.
+KEY CONCEPTS: Company research, mission alignment, specific products or initiatives, culture fit
+TIPS: Mention specific projects, products, or values — not just size or prestige
+COMMON MISTAKES: Generic answer that applies to any company, salary-focused, no research shown
+
+---
+
+QUESTION: Describe a conflict with a teammate
+DIFFICULTY: Medium
+TOPIC: Behavioral
+OPTIMAL APPROACH: STAR method focusing on resolution and relationship preservation
+DESCRIPTION: Demonstrate communication and conflict resolution skills.
+KEY CONCEPTS: Active listening, compromise, professional communication, outcome focus
+TIPS: Focus on the situation not the person, show how you resolved it constructively
+COMMON MISTAKES: Making teammate look bad, no resolution, choosing trivial conflicts
+
+---
+
+QUESTION: Tell me about a project you are proud of
+DIFFICULTY: Easy
+TOPIC: Behavioral
+OPTIMAL APPROACH: STAR method with technical depth and measurable impact
+DESCRIPTION: Highlight technical contribution and personal impact on a meaningful project.
+KEY CONCEPTS: Technical complexity, your specific role, challenges overcome, measurable results
+TIPS: Quantify impact, explain technical decisions, show passion for the work
+COMMON MISTAKES: Vague description, no metrics, not explaining your specific contribution
