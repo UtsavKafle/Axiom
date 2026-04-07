@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-const API_KEY = import.meta.env.VITE_NEWSAPIKEY
-
 const CATEGORIES = ['All', 'AI', 'Security', 'Web', 'Open Source', 'Jobs']
 
 const CATEGORY_QUERIES = {
@@ -94,15 +92,11 @@ function estimateReadTime(content = '', description = '') {
   return `${mins}m read`
 }
 
-async function fetchNews(query) {
-  const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=en&sortBy=publishedAt&pageSize=50&apiKey=${API_KEY}`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`NewsAPI error: ${res.status}`)
-  const data = await res.json()
-  if (data.status !== 'ok') throw new Error(data.message || 'NewsAPI error')
-  return data.articles.filter(
-    a => a.title && a.title !== '[Removed]' && a.description && isCSRelated(a.title, a.description)
-  )
+async function fetchNews(category) {
+  const res = await fetch(`/api/news/?category=${encodeURIComponent(category)}`)
+  if (!res.ok) throw new Error(`News fetch error: ${res.status}`)
+  const articles = await res.json()
+  return articles.filter(a => isCSRelated(a.title, a.description))
 }
 
 function SkeletonCard() {
@@ -224,7 +218,7 @@ export default function NewsFeed() {
         if (cache.current[activeCategory]) {
           articles = cache.current[activeCategory]
         } else {
-          const raw = await fetchNews(CATEGORY_QUERIES[activeCategory])
+          const raw = await fetchNews(activeCategory)
           articles = mapArticles(raw, activeCategory)
           cache.current[activeCategory] = articles
         }
