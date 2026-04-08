@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 
-const BACKEND = 'http://localhost:8000'
+const BACKEND = '/api'
 
 const PHASE_COLORS = ['#4361ee', '#4361ee', '#f4a400', '#22c55e']
 

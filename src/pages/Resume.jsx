@@ -1,30 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 
-const SCORE = 74
-
-const STRENGTHS = [
-  { icon: '⚡', issue: 'Strong technical stack', fix: 'React, Python, and Go are highly sought after. Your project variety demonstrates breadth.' },
-  { icon: '🔗', issue: 'GitHub links present', fix: 'Recruiters and engineers can validate your work. Ensure repos are public and well-documented.' },
-  { icon: '📐', issue: 'Clean single-page format', fix: 'Your resume fits on one page which is ideal for SWE roles. ATS systems parse it cleanly.' },
-]
-
-const IMPROVEMENTS = [
-  { icon: '📊', issue: 'Weak impact quantification', fix: 'Add metrics to bullets: "Reduced API latency by 40%" instead of "Optimized API performance".' },
-  { icon: '🔍', issue: 'Missing keywords for ATS', fix: 'Add: distributed systems, REST APIs, CI/CD, microservices, agile. These appear in 80% of SWE JDs.' },
-  { icon: '📝', issue: 'Objective statement is generic', fix: 'Replace with a 2-line summary. "CS Junior targeting SWE internship, shipping full-stack projects since 2023."' },
-]
-
-const CRITICAL = [
-  { icon: '🚨', issue: 'No internship experience listed', fix: 'Add personal projects as work experience. Reframe them: "Contract Developer, Personal Projects (2023–Present)".' },
-  { icon: '⚠️', issue: 'GPA below 3.5 threshold', fix: 'Consider omitting GPA or list relevant coursework instead. Highlight projects and hackathon wins.' },
-]
-
-const TAGS = [
-  { label: 'ATS Friendly', score: 68, color: '#f4a400' },
-  { label: 'Project Impact', score: 45, color: '#ef4444' },
-  { label: 'Tech Stack', score: 91, color: '#22c55e' },
-  { label: 'Formatting', score: 88, color: '#22c55e' },
-]
+function scoreColor(s) {
+  return s >= 80 ? '#22c55e' : s >= 60 ? '#f4a400' : '#ef4444'
+}
 
 function ScoreRing({ score }) {
   const r = 56
@@ -129,9 +107,12 @@ export default function Resume() {
   const [analyzing, setAnalyzing] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const [pasteMode, setPasteMode] = useState(false)
+  const [pasteText, setPasteText] = useState('')
   const [fileName, setFileName] = useState(null)
   const [uploadedFile, setUploadedFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState(null)
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState(null)
   const fileRef = useRef()
 
   useEffect(() => {
@@ -158,9 +139,29 @@ export default function Resume() {
     if (file) processFile(file)
   }
 
-  function handleAnalyze() {
+  async function handleAnalyze() {
     setAnalyzing(true)
-    setTimeout(() => { setAnalyzing(false); setAnalyzed(true) }, 2200)
+    setError(null)
+    try {
+      const formData = new FormData()
+      if (!pasteMode && uploadedFile) {
+        formData.append('file', uploadedFile)
+      } else {
+        formData.append('text', pasteText)
+      }
+      const res = await fetch('/api/resume/analyze', { method: 'POST', body: formData })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.detail || `Error ${res.status}`)
+      }
+      const data = await res.json()
+      setResult(data)
+      setAnalyzed(true)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setAnalyzing(false)
+    }
   }
 
   function handleReset() {
@@ -170,6 +171,9 @@ export default function Resume() {
     setFileName(null)
     setUploadedFile(null)
     setPreviewUrl(null)
+    setResult(null)
+    setError(null)
+    setPasteText('')
   }
 
   const isPDF = fileName?.toLowerCase().endsWith('.pdf') || uploadedFile?.type === 'application/pdf'
@@ -336,6 +340,8 @@ export default function Resume() {
           <div className="animate-in stagger-3" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '240px' }}>
             <textarea
               placeholder="Paste your resume text here..."
+              value={pasteText}
+              onChange={e => setPasteText(e.target.value)}
               style={{
                 flex: 1,
                 background: '#111113',
@@ -356,7 +362,13 @@ export default function Resume() {
         )}
 
         {/* Analyze button */}
-        {(fileName || pasteMode) && !analyzed && (
+        {error && (
+          <div style={{ padding: '10px 12px', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', fontFamily: "'Space Mono', monospace", fontSize: '11px', color: '#f87171' }}>
+            // Error: {error}
+          </div>
+        )}
+
+        {(fileName || (pasteMode && pasteText.trim())) && !analyzed && (
           <button
             onClick={handleAnalyze}
             disabled={analyzing}
@@ -431,19 +443,27 @@ export default function Resume() {
               border: '1px solid #1e1e22',
               display: 'flex', alignItems: 'center', gap: '28px',
             }}>
-              <ScoreRing score={SCORE} />
+              <ScoreRing score={result.overall_score} />
               <div style={{ flex: 1 }}>
                 <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600', fontSize: '12px', color: '#f4f4f5', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>CS-Specific Checks</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {TAGS.map(tag => (
-                    <div key={tag.label} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '11px', color: '#a1a1aa', width: '96px' }}>{tag.label}</span>
-                      <div style={{ flex: 1, height: '4px', background: '#1e1e22', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${tag.score}%`, background: tag.color }} />
+                  {[
+                    { label: 'ATS Friendly',   score: result.ats_score },
+                    { label: 'Project Impact', score: result.impact_score },
+                    { label: 'Tech Stack',     score: result.tech_score },
+                    { label: 'Formatting',     score: result.format_score },
+                  ].map(tag => {
+                    const color = scoreColor(tag.score)
+                    return (
+                      <div key={tag.label} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '11px', color: '#a1a1aa', width: '96px' }}>{tag.label}</span>
+                        <div style={{ flex: 1, height: '4px', background: '#1e1e22', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${tag.score}%`, background: color }} />
+                        </div>
+                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color, width: '28px', textAlign: 'right' }}>{tag.score}</span>
                       </div>
-                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: tag.color, width: '28px', textAlign: 'right' }}>{tag.score}</span>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             </div>
@@ -453,9 +473,9 @@ export default function Resume() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span style={{ width: '6px', height: '6px', background: '#22c55e', display: 'inline-block' }} />
                 <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600', fontSize: '12px', color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Strengths</span>
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#52525b', marginLeft: '2px' }}>{STRENGTHS.length} found</span>
+                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#52525b', marginLeft: '2px' }}>{result.strengths.length} found</span>
               </div>
-              {STRENGTHS.map((item, i) => <FeedbackRow key={i} item={item} accentColor="#22c55e" typeLabel="STRENGTH" />)}
+              {result.strengths.map((item, i) => <FeedbackRow key={i} item={item} accentColor="#22c55e" typeLabel="STRENGTH" />)}
             </div>
 
             {/* Improvements */}
@@ -463,20 +483,22 @@ export default function Resume() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span style={{ width: '6px', height: '6px', background: '#f4a400', display: 'inline-block' }} />
                 <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600', fontSize: '12px', color: '#f4a400', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Improvements</span>
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#52525b', marginLeft: '2px' }}>{IMPROVEMENTS.length} suggestions</span>
+                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#52525b', marginLeft: '2px' }}>{result.improvements.length} suggestions</span>
               </div>
-              {IMPROVEMENTS.map((item, i) => <FeedbackRow key={i} item={item} accentColor="#f4a400" typeLabel="FIX" />)}
+              {result.improvements.map((item, i) => <FeedbackRow key={i} item={item} accentColor="#f4a400" typeLabel="FIX" />)}
             </div>
 
             {/* Critical */}
+            {result.critical.length > 0 && (
             <div className="animate-in stagger-4">
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span style={{ width: '6px', height: '6px', background: '#ef4444', display: 'inline-block' }} />
                 <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600', fontSize: '12px', color: '#ef4444', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Critical Issues</span>
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#52525b', marginLeft: '2px' }}>{CRITICAL.length} issues</span>
+                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#52525b', marginLeft: '2px' }}>{result.critical.length} issues</span>
               </div>
-              {CRITICAL.map((item, i) => <FeedbackRow key={i} item={item} accentColor="#ef4444" typeLabel="CRITICAL" />)}
+              {result.critical.map((item, i) => <FeedbackRow key={i} item={item} accentColor="#ef4444" typeLabel="CRITICAL" />)}
             </div>
+            )}
 
             <button
               onClick={handleReset}

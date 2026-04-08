@@ -22,7 +22,7 @@ ALLOWED_LANGUAGES = {"Python", "JavaScript", "Java", "C++", "Go"}
 
 # Prompt injection patterns to reject before passing to watsonx.ai
 _INJECTION_PATTERNS = re.compile(
-    r"(ignore previous instructions|you are now|forget your instructions|disregard|override)",
+    r"(ignore previous instructions|you are now|forget your instructions|disregard all previous|ignore all instructions)",
     re.IGNORECASE,
 )
 

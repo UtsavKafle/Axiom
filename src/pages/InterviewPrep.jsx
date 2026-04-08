@@ -165,11 +165,9 @@ export default function InterviewPrep() {
       setLoading(true)
       setError(null)
       try {
-        const { data, error: err } = await supabase
-          .from('questions')
-          .select('*')
-          .order('created_at', { ascending: false })
-        if (err) throw err
+        const res = await fetch('/api/interview/questions')
+        if (!res.ok) throw new Error(`Failed to load questions (${res.status})`)
+        const data = await res.json()
         setQuestions(data || [])
       } catch (err) {
         setError(err.message)

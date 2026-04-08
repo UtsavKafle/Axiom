@@ -235,7 +235,7 @@ export default function PracticePanel({ question, progressRow, onClose, onMarkCo
     setConsoleLines(prev => [...prev, '[ Axiom ] Analyzing your solution...'])
 
     try {
-      const res = await fetch('http://localhost:8000/api/review', {
+      const res = await fetch('/api/review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

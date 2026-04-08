@@ -26,7 +26,7 @@ app.include_router(roadmap.router, prefix="/roadmap", tags=["roadmap"])
 app.include_router(resume.router, prefix="/resume", tags=["resume"])
 app.include_router(interview.router, prefix="/interview", tags=["interview"])
 app.include_router(opportunities.router, prefix="/opportunities", tags=["opportunities"])
-app.include_router(orchestrate.router, prefix="/api/review", tags=["review"])
+app.include_router(orchestrate.router, prefix="/review", tags=["review"])
 
 
 @app.get("/health")
