@@ -103,15 +103,17 @@ function EmptyState() {
 }
 
 export default function Resume() {
-  const [analyzed, setAnalyzed] = useState(false)
+  const _saved = (() => { try { return JSON.parse(sessionStorage.getItem('axiom_resume') || 'null') } catch { return null } })()
+
+  const [analyzed, setAnalyzed] = useState(!!_saved)
   const [analyzing, setAnalyzing] = useState(false)
   const [dragOver, setDragOver] = useState(false)
-  const [pasteMode, setPasteMode] = useState(false)
-  const [pasteText, setPasteText] = useState('')
-  const [fileName, setFileName] = useState(null)
+  const [pasteMode, setPasteMode] = useState(_saved?.pasteMode ?? false)
+  const [pasteText, setPasteText] = useState(_saved?.pasteText ?? '')
+  const [fileName, setFileName] = useState(_saved?.fileName ?? null)
   const [uploadedFile, setUploadedFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState(null)
-  const [result, setResult] = useState(null)
+  const [result, setResult] = useState(_saved?.result ?? null)
   const [error, setError] = useState(null)
   const fileRef = useRef()
 
@@ -157,6 +159,12 @@ export default function Resume() {
       const data = await res.json()
       setResult(data)
       setAnalyzed(true)
+      sessionStorage.setItem('axiom_resume', JSON.stringify({
+        result: data,
+        fileName: pasteMode ? null : fileName,
+        pasteText: pasteMode ? pasteText : '',
+        pasteMode,
+      }))
     } catch (err) {
       setError(err.message)
     } finally {
@@ -174,6 +182,7 @@ export default function Resume() {
     setResult(null)
     setError(null)
     setPasteText('')
+    sessionStorage.removeItem('axiom_resume')
   }
 
   const isPDF = fileName?.toLowerCase().endsWith('.pdf') || uploadedFile?.type === 'application/pdf'

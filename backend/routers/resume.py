@@ -102,6 +102,29 @@ def _extract_pdf_text(data: bytes) -> str:
         raise HTTPException(status_code=422, detail=f"Could not read PDF: {e}")
 
 
+_RESUME_SIGNALS = re.compile(
+    r'\b(education|experience|skills|work history|employment|projects?|internship|university|college|degree|'
+    r'bachelor|master|phd|gpa|resume|curriculum vitae|cv|objective|summary|certifications?|'
+    r'languages?|frameworks?|technologies|achievements?|awards?|publications?|volunteering|references?)\b',
+    re.IGNORECASE,
+)
+
+_ZERO_RESPONSE = {
+    "overall_score": 0,
+    "ats_score": 0,
+    "impact_score": 0,
+    "tech_score": 0,
+    "format_score": 0,
+    "strengths": [],
+    "improvements": [],
+    "critical": [{"issue": "Not a resume", "fix": "The uploaded document does not appear to be a resume. Please upload a resume with standard sections such as Education, Experience, and Skills."}],
+}
+
+def _is_resume(text: str) -> bool:
+    matches = _RESUME_SIGNALS.findall(text)
+    return len(set(m.lower() for m in matches)) >= 3
+
+
 def _parse_and_validate(raw: str) -> dict:
     raw = raw.strip()
     try:
@@ -152,6 +175,9 @@ async def analyze_resume(
 
     if len(resume_text) < 100:
         raise HTTPException(status_code=422, detail="Resume text is too short to analyze")
+
+    if not _is_resume(resume_text):
+        return _ZERO_RESPONSE
     if len(resume_text) > 15_000:
         resume_text = resume_text[:15_000]
 
