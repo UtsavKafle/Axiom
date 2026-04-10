@@ -105,8 +105,9 @@ export default function Layout({ children }) {
       <aside style={{
         width: '220px',
         minWidth: '220px',
-        background: '#0d0d0f',
-        borderRight: '1px solid #1e1e22',
+        background: 'rgba(9,9,11,0.8)',
+        backdropFilter: 'blur(20px)',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
         display: 'flex',
         flexDirection: 'column',
         zIndex: 50,
@@ -150,11 +151,14 @@ export default function Layout({ children }) {
                 fontFamily: "'IBM Plex Sans', sans-serif",
                 fontSize: '13px',
                 fontWeight: isActive ? '500' : '400',
-                color: isActive ? '#f4f4f5' : '#71717a',
-                background: isActive ? '#111113' : 'transparent',
+                color: isActive ? '#4361ee' : '#71717a',
+                background: isActive ? 'rgba(67,97,238,0.15)' : 'transparent',
                 borderLeft: isActive ? '2px solid #4361ee' : '2px solid transparent',
-                transition: 'all 0.12s ease',
+                borderRadius: isActive ? '0 8px 8px 0' : '0',
+                transition: 'all 150ms ease',
               })}
+            onMouseEnter={e => { if (!e.currentTarget.getAttribute('aria-current')) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+            onMouseLeave={e => { if (!e.currentTarget.getAttribute('aria-current')) e.currentTarget.style.background = 'transparent' }}
             >
               {({ isActive }) => (
                 <>
@@ -176,8 +180,9 @@ export default function Layout({ children }) {
             alignItems: 'center',
             gap: '8px',
             padding: '7px 10px',
-            background: 'rgba(244, 164, 0, 0.06)',
-            border: '1px solid rgba(244, 164, 0, 0.15)',
+            background: 'rgba(244,164,0,0.15)',
+            border: '1px solid rgba(244,164,0,0.3)',
+            boxShadow: '0 0 24px rgba(244,164,0,0.25), 0 0 48px rgba(244,164,0,0.1)',
             marginBottom: '10px',
           }}>
             <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#f4a400', letterSpacing: '0.08em' }}>STREAK</span>
@@ -192,6 +197,7 @@ export default function Layout({ children }) {
               fontSize: '11px', fontWeight: '700', color: '#fff',
               fontFamily: "'IBM Plex Sans', sans-serif",
               flexShrink: 0,
+              boxShadow: '0 0 0 2px #4361ee, 0 0 12px rgba(67,97,238,0.4)',
             }}>{initial}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '12px', fontWeight: '500', color: '#f4f4f5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shortName}</div>
@@ -228,8 +234,9 @@ export default function Layout({ children }) {
         {/* Top bar */}
         <header style={{
           height: '48px',
-          background: '#09090b',
-          borderBottom: '1px solid #1e1e22',
+          background: 'rgba(9,9,11,0.9)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -251,11 +258,14 @@ export default function Layout({ children }) {
             {/* Search */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: '7px',
-              background: '#111113',
-              border: '1px solid #1e1e22',
+              background: 'rgba(255,255,255,0.03)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '12px',
               padding: '5px 10px',
               fontSize: '12px', color: '#71717a',
               fontFamily: "'IBM Plex Sans', sans-serif",
+              transition: 'border-color 150ms ease, box-shadow 150ms ease',
             }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#71717a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>

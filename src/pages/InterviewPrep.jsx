@@ -27,9 +27,9 @@ const WEEKLY_PLAN = [
 ]
 
 const DIFF_CONFIG = {
-  Easy:   { bg: 'rgba(34,197,94,0.1)',  color: '#22c55e', border: 'rgba(34,197,94,0.25)' },
-  Medium: { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b', border: 'rgba(245,158,11,0.25)' },
-  Hard:   { bg: 'rgba(239,68,68,0.1)',  color: '#ef4444', border: 'rgba(239,68,68,0.25)' },
+  Easy:   { bg: 'rgba(34,197,94,0.15)',  color: '#22c55e', border: 'rgba(34,197,94,0.3)' },
+  Medium: { bg: 'rgba(244,164,0,0.15)', color: '#f4a400', border: 'rgba(244,164,0,0.3)' },
+  Hard:   { bg: 'rgba(239,68,68,0.15)',  color: '#ef4444', border: 'rgba(239,68,68,0.3)' },
 }
 
 // ── Helper functions ─────────────────────────────────────────────────────────
@@ -332,7 +332,7 @@ export default function InterviewPrep() {
     const row = progress[questionId]
     const busy = practiceLoading[questionId]
     if (busy) return { label: '...', disabled: true, bg: 'rgba(67,97,238,0.1)', color: '#3f3f46', border: '1px solid rgba(67,97,238,0.1)' }
-    if (!row || row.status === 'not_started') return { label: 'Practice', disabled: false, bg: 'rgba(67,97,238,0.1)', color: '#6b83f0', border: '1px solid rgba(67,97,238,0.2)' }
+    if (!row || row.status === 'not_started') return { label: 'Practice', disabled: false, bg: 'rgba(67,97,238,0.1)', color: '#4361ee', border: '1px solid rgba(67,97,238,0.3)' }
     if (row.status === 'in_progress') return { label: 'Mark Done', disabled: false, bg: 'rgba(244,164,0,0.1)', color: '#f4a400', border: '1px solid rgba(244,164,0,0.25)' }
     return { label: 'Done ✓', disabled: true, bg: 'rgba(34,197,94,0.08)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.2)' }
   }
@@ -372,22 +372,23 @@ export default function InterviewPrep() {
           overflow: 'hidden',
           transition: 'max-height 0.25s ease',
         }}>
-          <div style={{ padding: '0 16px 14px', display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px' }}>
-            {WEEKLY_PLAN.map((day) => (
-              <div key={day.day} style={{
-                background: day.done ? 'rgba(67,97,238,0.08)' : '#111113',
-                border: `1px solid ${day.done ? 'rgba(67,97,238,0.25)' : '#1e1e22'}`,
-                padding: '10px 8px', textAlign: 'center', position: 'relative',
-              }}>
+          <div className="bg-grid glass-card" style={{ padding: '0 16px 14px', display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', borderRadius: 0 }}>
+            {WEEKLY_PLAN.map((day, di) => (
+              <div key={day.day}
+                className={di === 0 ? 'gradient-border' : 'glass-card'}
+                style={{ padding: '10px 8px', textAlign: 'center', position: 'relative' }}
+                onMouseEnter={di !== 0 ? e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)' } : undefined}
+                onMouseLeave={di !== 0 ? e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' } : undefined}
+              >
                 {day.done && (
                   <div style={{
                     position: 'absolute', top: '-5px', right: '-5px',
-                    width: '14px', height: '14px', background: '#22c55e',
+                    width: '14px', height: '14px', background: '#4361ee',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: '8px', color: '#fff', fontWeight: '700',
                   }}>✓</div>
                 )}
-                <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '700', fontSize: '11px', color: day.done ? '#6b83f0' : '#f4f4f5', marginBottom: '6px' }}>{day.day}</div>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '700', fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '6px' }}>{day.day}</div>
                 {day.tasks.map((task, ti) => (
                   <div key={ti} style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '10px', color: '#71717a', lineHeight: '1.4', marginBottom: '1px' }}>{task}</div>
                 ))}
@@ -404,15 +405,18 @@ export default function InterviewPrep() {
         flexShrink: 0,
       }}>
         {stats.map((stat, i) => (
-          <div key={stat.label} style={{
-            padding: '14px 18px',
-            display: 'flex', alignItems: 'center', gap: '12px',
-            borderRight: i < 3 ? '1px solid #1e1e22' : 'none',
-            background: '#0d0d0f',
-          }}>
+          <div key={stat.label}
+            className={`glass-card${stat.label === 'Current Streak' && !stat.value.startsWith('0') ? ' glow-amber' : ''}`}
+            style={{
+              padding: '20px',
+              display: 'flex', alignItems: 'center', gap: '12px',
+              borderRight: i < 3 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+              borderRadius: 0,
+            }}
+          >
             <div>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '700', fontSize: '18px', color: stat.color }}>{stat.value}</div>
-              <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '11px', color: '#52525b', marginTop: '1px' }}>{stat.label}</div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: '800', fontSize: '2rem', color: '#ffffff' }}>{stat.value}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginTop: '1px', letterSpacing: '0.1em' }}>{stat.label}</div>
             </div>
           </div>
         ))}
@@ -438,16 +442,19 @@ export default function InterviewPrep() {
             {/* Type filters */}
             <div style={{ display: 'flex', gap: '0', marginRight: '12px' }}>
               {FILTERS.map(f => (
-                <button key={f} onClick={() => setActiveFilter(f)} style={{
-                  padding: '0 12px', height: '44px',
-                  border: 'none',
-                  borderBottom: activeFilter === f ? '2px solid #4361ee' : '2px solid transparent',
-                  background: 'transparent',
-                  color: activeFilter === f ? '#f4f4f5' : '#71717a',
-                  fontSize: '12px', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif",
-                  fontWeight: activeFilter === f ? '500' : '400',
-                  transition: 'all 0.12s', whiteSpace: 'nowrap',
-                }}>{f}</button>
+                <button key={f} onClick={() => setActiveFilter(f)}
+                  style={{
+                    padding: '5px 12px', height: 'auto', margin: '0 2px',
+                    border: 'none', borderBottom: 'none', borderRadius: '6px',
+                    background: activeFilter === f ? '#4361ee' : 'transparent',
+                    color: activeFilter === f ? '#ffffff' : '#71717a',
+                    fontSize: '12px', cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif",
+                    fontWeight: activeFilter === f ? '600' : '400',
+                    transition: 'all 150ms ease', whiteSpace: 'nowrap',
+                  }}
+                  onMouseEnter={e => { if (activeFilter !== f) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+                  onMouseLeave={e => { if (activeFilter !== f) e.currentTarget.style.background = 'transparent' }}
+                >{f}</button>
               ))}
             </div>
 
@@ -492,7 +499,7 @@ export default function InterviewPrep() {
           </div>
 
           {/* Question table */}
-          <div style={{ flex: 1, overflowY: 'auto' }}>
+          <div className="glass-card" style={{ flex: 1, overflowY: 'auto', borderRadius: '0' }}>
             {/* Table header */}
             <div style={{
               display: 'grid',
@@ -548,14 +555,14 @@ export default function InterviewPrep() {
                     gridTemplateColumns: '20px 28px 1fr 80px 80px 72px 80px 72px',
                     gap: '0',
                     padding: '11px 16px',
-                    borderBottom: '1px solid #1e1e22',
-                    background: '#09090b',
+                    borderBottom: '1px solid rgba(255,255,255,0.04)',
+                    background: 'transparent',
                     cursor: 'pointer',
-                    transition: 'background 0.1s',
+                    transition: 'background 150ms ease',
                     alignItems: 'center',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#111113' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = '#09090b' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                 >
                   {/* Status dot — from user_progress */}
                   <div style={{
@@ -638,8 +645,8 @@ export default function InterviewPrep() {
                         transition: 'all 0.12s', whiteSpace: 'nowrap',
                         opacity: btn.disabled && !practiceLoading[q.id] ? 0.7 : 1,
                       }}
-                      onMouseEnter={e => { if (!btn.disabled) e.currentTarget.style.opacity = '0.8' }}
-                      onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
+                      onMouseEnter={e => { if (!btn.disabled) { if (btn.label === 'Practice') { e.currentTarget.style.background = '#4361ee'; e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.boxShadow = '0 0 24px rgba(67,97,238,0.25), 0 0 48px rgba(67,97,238,0.1)' } else { e.currentTarget.style.opacity = '0.8' } } }}
+                      onMouseLeave={e => { e.currentTarget.style.background = btn.bg; e.currentTarget.style.color = btn.color; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.opacity = '1' }}
                     >{btn.label}</button>
                   </div>
                 </div>
@@ -653,7 +660,7 @@ export default function InterviewPrep() {
         <div style={{ width: '240px', flexShrink: 0, display: 'flex', flexDirection: 'column', background: '#0d0d0f', overflowY: 'auto' }}>
 
           {/* Trending */}
-          <div className="animate-in stagger-3" style={{ padding: '16px', borderBottom: '1px solid #1e1e22' }}>
+          <div className="animate-in stagger-3 glass-card" style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', position: 'sticky', top: 0, borderRadius: '0' }}>
             <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600', fontSize: '12px', color: '#f4f4f5', marginBottom: '3px' }}>
               Trending This Week
             </div>
@@ -703,15 +710,17 @@ export default function InterviewPrep() {
             <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '12px', color: '#71717a', marginBottom: '14px', lineHeight: '1.55' }}>
               Simulate a real FAANG-style interview with timed coding and behavioral questions.
             </div>
-            <button style={{
-              width: '100%', padding: '9px',
-              background: '#4361ee',
-              border: 'none',
-              color: '#fff', fontFamily: "'IBM Plex Sans', sans-serif",
-              fontWeight: '600', fontSize: '12px',
-              cursor: 'pointer',
-              transition: 'opacity 0.12s',
-            }}
+            <button
+              className="glow-amber"
+              style={{
+                width: '100%', padding: '9px',
+                background: 'linear-gradient(135deg, #f4a400, #e09000)',
+                border: 'none',
+                color: '#09090b', fontFamily: "'IBM Plex Sans', sans-serif",
+                fontWeight: '700', fontSize: '12px',
+                cursor: 'pointer',
+                transition: 'opacity 0.12s',
+              }}
               onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
               onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >

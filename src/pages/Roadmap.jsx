@@ -465,7 +465,7 @@ export default function Roadmap() {
         display: 'flex', flexDirection: 'column', background: '#0d0d0f', overflowY: 'auto',
       }}>
         {/* User card */}
-        <div className="animate-in stagger-1" style={{ padding: '16px', borderBottom: '1px solid #1e1e22' }}>
+        <div className="animate-in stagger-1 glass-card" style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '12px' }}>
             <div style={{
               width: '32px', height: '32px', background: '#4361ee',
@@ -491,9 +491,9 @@ export default function Roadmap() {
         </div>
 
         {/* Progress */}
-        <div className="animate-in stagger-2" style={{ padding: '16px', borderBottom: '1px solid #1e1e22' }}>
+        <div className="animate-in stagger-2 glass-card" style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '12px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '500', fontSize: '12px', color: '#f4f4f5' }}>Progress</span>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: '500', fontSize: '10px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Progress</span>
             <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '12px', color: '#4361ee', fontWeight: '700' }}>{progress}%</span>
           </div>
           <div style={{ height: '4px', background: '#1e1e22', overflow: 'hidden', marginBottom: '8px' }}>
@@ -505,8 +505,8 @@ export default function Roadmap() {
         </div>
 
         {/* Phase progress */}
-        <div className="animate-in stagger-3" style={{ padding: '16px', borderBottom: '1px solid #1e1e22' }}>
-          <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '500', fontSize: '11px', color: '#71717a', letterSpacing: '0.06em', marginBottom: '10px', textTransform: 'uppercase' }}>Phases</div>
+        <div className="animate-in stagger-3 glass-card" style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '12px' }}>
+          <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '500', fontSize: '10px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em', marginBottom: '10px', textTransform: 'uppercase' }}>Phases</div>
           {phases.map((phase) => {
             const done = phase.nodes.filter(n => n.status === 'completed').length
             const pct  = phase.nodes.length > 0 ? Math.round((done / phase.nodes.length) * 100) : 0
@@ -525,8 +525,8 @@ export default function Roadmap() {
         </div>
 
         {/* Node legend */}
-        <div className="animate-in stagger-4" style={{ padding: '16px' }}>
-          <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '500', fontSize: '11px', color: '#71717a', letterSpacing: '0.06em', marginBottom: '10px', textTransform: 'uppercase' }}>Node States</div>
+        <div className="animate-in stagger-4 glass-card" style={{ padding: '16px', marginBottom: '12px' }}>
+          <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '500', fontSize: '10px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em', marginBottom: '10px', textTransform: 'uppercase' }}>Node States</div>
           {[
             { label: 'Completed',   color: '#4361ee', glow: 'rgba(67,97,238,0.6)' },
             { label: 'In Progress', color: '#f4a400', glow: 'rgba(244,164,0,0.6)' },
@@ -550,30 +550,33 @@ export default function Roadmap() {
       <div style={{ flex: 1, overflowY: 'auto', padding: '32px 48px', position: 'relative' }}>
 
         {/* Header */}
-        <div className="animate-in stagger-1" style={{ marginBottom: '28px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div className="animate-in stagger-1" style={{ marginBottom: '28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#4361ee', letterSpacing: '0.18em' }}>// SYS.ROADMAP</span>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '12px', color: '#4361ee', letterSpacing: '0.15em' }}>// SYS.ROADMAP</span>
             </div>
-            <h1 style={{ fontFamily: "'DM Serif Display', serif", fontWeight: 400, fontSize: '36px', color: '#f4f4f5', letterSpacing: '-0.02em', lineHeight: '1.1', marginBottom: '8px' }}>
+            <h1 style={{ fontFamily: "'Syne', 'DM Serif Display', serif", fontWeight: 800, fontSize: 'clamp(1.8rem, 3vw, 2.8rem)', color: '#f4f4f5', lineHeight: '1.1', marginBottom: '8px' }}>
               Your CS Learning Path
             </h1>
-            <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#52525b', letterSpacing: '0.08em' }}>
+            <p style={{ fontFamily: "'Space Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em' }}>
               PERSONALIZED_FOR → SWE_ROLE @ TOP_TIER_TECH
             </p>
           </div>
 
           {/* Edit mode toggle */}
           <button
+            className={editMode ? '' : 'gradient-border'}
             onClick={() => setEditMode(prev => !prev)}
             style={{
-              padding: '7px 14px', flexShrink: 0, marginTop: '4px',
+              padding: '7px 14px', flexShrink: 0,
               background: editMode ? 'rgba(244,164,0,0.08)' : 'transparent',
-              border: editMode ? '1px solid rgba(244,164,0,0.4)' : '1px solid #1e1e22',
-              color: editMode ? '#f4a400' : '#52525b',
+              border: editMode ? '1px solid rgba(244,164,0,0.4)' : undefined,
+              color: '#4361ee',
               fontFamily: "'Space Mono', monospace", fontSize: '10px',
-              cursor: 'pointer', letterSpacing: '0.06em', transition: 'all 0.15s',
+              cursor: 'pointer', letterSpacing: '0.06em', transition: 'all 200ms ease',
             }}
+            onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 24px rgba(67,97,238,0.25), 0 0 48px rgba(67,97,238,0.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
           >
             {editMode ? '◈ EDITING' : '⊘ EDIT MODE'}
           </button>
@@ -600,8 +603,8 @@ export default function Roadmap() {
           display: 'flex', alignItems: 'center', gap: '14px',
         }}>
           <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#52525b', whiteSpace: 'nowrap', letterSpacing: '0.06em' }}>OVERALL</span>
-          <div style={{ flex: 1, height: '6px', background: '#1e1e22', overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${progress}%`, background: '#4361ee', transition: 'width 1s ease' }} />
+          <div style={{ flex: 1, height: '6px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden', borderRadius: '999px' }}>
+            <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, #4361ee, #7b8ff7)', boxShadow: '0 0 12px rgba(67,97,238,0.5)', borderRadius: '999px', transition: 'width 1s ease' }} />
           </div>
           <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '12px', color: '#4361ee', fontWeight: '700', whiteSpace: 'nowrap' }}>{progress}%</span>
         </div>
@@ -611,17 +614,17 @@ export default function Roadmap() {
           <div key={phase.id} className={`animate-in stagger-${pi + 2}`} style={{ marginBottom: '52px', position: 'relative' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
               <span style={{
-                padding: '3px 10px', background: 'transparent',
-                border: `1px solid ${phase.color}`,
+                padding: '3px 10px', background: 'rgba(67,97,238,0.15)',
+                border: '1px solid #4361ee', borderRadius: '4px',
                 fontFamily: "'Space Mono', monospace", fontSize: '10px',
-                color: phase.color, letterSpacing: '0.08em',
+                color: '#4361ee', letterSpacing: '0.08em',
               }}>PHASE {pi + 1}</span>
-              <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600', fontSize: '15px', color: '#f4f4f5' }}>{phase.label}</span>
+              <span style={{ fontFamily: "'Syne', 'IBM Plex Sans', sans-serif", fontWeight: '700', fontSize: '15px', color: '#f4f4f5' }}>{phase.label}</span>
               <div style={{ flex: 1, height: '1px', background: '#1e1e22' }} />
             </div>
 
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0', position: 'relative' }}>
-              <div style={{ position: 'absolute', top: '31px', left: '32px', right: '32px', height: '1px', background: '#2a2a32', zIndex: 0 }} />
+              <div style={{ position: 'absolute', top: '31px', left: '32px', right: '32px', height: '1px', background: 'rgba(255,255,255,0.1)', zIndex: 0 }} />
 
               {phase.nodes.map((node) => {
                 const cfg = STATUS_CONFIG[node.status]
@@ -641,17 +644,26 @@ export default function Roadmap() {
                           className="node-hex"
                           style={{
                             width: '62px', height: '62px',
-                            background: node.status === 'completed' ? '#4361ee' : node.status === 'in-progress' ? cfg.fill : '#111113',
-                            border: node.status === 'in-progress'
+                            background: node.status === 'completed'
+                              ? 'rgba(67,97,238,0.2)'
+                              : node.status === 'in-progress'
+                              ? 'rgba(244,164,0,0.15)'
+                              : 'rgba(255,255,255,0.04)',
+                            border: node.status === 'completed'
+                              ? '2px solid #4361ee'
+                              : node.status === 'in-progress'
                               ? '2px solid #f4a400'
-                              : editMode ? '1px dashed #3f3f46' : 'none',
+                              : editMode ? '1px dashed #3f3f46' : '1px solid rgba(255,255,255,0.1)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: node.status === 'completed' ? '20px' : '14px',
-                            color: node.status === 'locked' ? '#3f3f46' : node.status === 'in-progress' ? '#f4a400' : '#fff',
+                            color: node.status === 'locked' ? 'rgba(255,255,255,0.3)' : node.status === 'in-progress' ? '#f4a400' : '#fff',
                             fontWeight: '600',
+                            transition: 'transform 200ms ease',
+                            animation: node.status === 'in-progress' ? 'pulse-amber 2s ease-in-out infinite' : undefined,
+                            boxShadow: node.status === 'completed' ? '0 0 12px rgba(67,97,238,0.4)' : undefined,
                           }}
-                          onMouseEnter={e => { e.currentTarget.classList.add('node-hex-jiggle') }}
-                          onMouseLeave={e => e.currentTarget.classList.remove('node-hex-jiggle')}
+                          onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.08)' }}
+                          onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
                         >
                           {node.status === 'completed' ? '✓' : node.status === 'in-progress' ? '◉' : '○'}
                         </div>

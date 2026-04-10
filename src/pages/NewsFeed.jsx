@@ -118,18 +118,19 @@ function NewsCard({ card, index, isLast }) {
   return (
     <a href={card.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
       <div
-        className={`animate-in stagger-${Math.min(index + 1, 8)}`}
+        className={`glass-card animate-in stagger-${Math.min(index + 1, 8)}`}
         style={{
           padding: '14px 16px',
-          background: '#111113',
-          border: '1px solid #1e1e22',
-          borderBottom: isLast ? '1px solid #1e1e22' : 'none',
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderBottom: isLast ? '1px solid rgba(255,255,255,0.08)' : 'none',
           cursor: 'pointer',
-          transition: 'background 0.12s, border-color 0.12s',
-          borderLeft: card.breaking ? '2px solid #f4a400' : '1px solid #1e1e22',
+          transition: 'all 200ms ease',
+          borderLeft: card.breaking ? '2px solid #f4a400' : '1px solid rgba(255,255,255,0.08)',
+          borderRadius: '0',
         }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#161618' }}
-        onMouseLeave={e => { e.currentTarget.style.background = '#111113' }}
+        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = 'rgba(67,97,238,0.3)' }}
+        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
       >
         {/* Row 1: timestamp + source + categories */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '7px', flexWrap: 'wrap' }}>
@@ -137,7 +138,7 @@ function NewsCard({ card, index, isLast }) {
             {card.time}
           </span>
           <span style={{ color: '#2a2a32', fontSize: '10px' }}>—</span>
-          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#71717a', fontWeight: '700', letterSpacing: '0.05em' }}>
+          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: '700', letterSpacing: '0.05em' }}>
             {card.source.toUpperCase()}
           </span>
           <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto', flexWrap: 'wrap' }}>
@@ -264,28 +265,41 @@ export default function NewsFeed() {
             // Error: {error}
           </div>
         ) : hero ? (
+          <div style={{ position: 'relative', overflow: 'hidden', minHeight: '380px' }}>
+            {/* Spline background */}
+            <iframe
+              src="https://my.spline.design/claritystream-PVuKV1gtE6lu3tWXS1Yu7Zhx/"
+              title="hero background"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none', border: 'none' }}
+            />
+            {/* Radial overlay — buries baked-in Spline text at center-top */}
+            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 55% 40%, #09090b 85%, transparent 100%)', zIndex: 5 }} />
+            {/* Bottom fade — blends wave animation into page background */}
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, #09090b 100%)', zIndex: 6 }} />
+            {/* Hero content */}
+            <div style={{ position: 'relative', zIndex: 10 }}>
           <a href={hero.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
             <div
               className="animate-in stagger-1"
               style={{
                 padding: '24px',
                 borderBottom: '1px solid #1e1e22',
-                background: '#111113',
+                background: 'transparent',
                 borderLeft: '3px solid #4361ee',
                 cursor: 'pointer',
                 transition: 'background 0.12s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#161618' }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#111113' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(22,22,24,0.5)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
             >
               {/* Meta row */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#4361ee', letterSpacing: '0.08em' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#4361ee', letterSpacing: '0.08em', background: 'rgba(67,97,238,0.2)', border: '1px solid #4361ee', padding: '2px 8px', borderRadius: '4px' }}>
                   <span className="pulse-dot" style={{ width: '5px', height: '5px', background: '#4361ee', display: 'inline-block' }} />
                   FEATURED
                 </span>
                 <span style={{ color: '#2a2a32' }}>—</span>
-                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#52525b', fontWeight: '700' }}>{hero.source.toUpperCase()}</span>
+                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>{hero.source.toUpperCase()}</span>
                 <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#3f3f46' }}>{hero.time}</span>
                 <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
                   {hero.categories.slice(0, 2).map(cat => {
@@ -299,7 +313,7 @@ export default function NewsFeed() {
                 </div>
               </div>
               {/* Headline — serif display */}
-              <h2 style={{ fontFamily: "'DM Serif Display', serif", fontWeight: 400, fontSize: '24px', color: '#f4f4f5', lineHeight: '1.25', marginBottom: '10px', maxWidth: '640px' }}>
+              <h2 style={{ fontFamily: "'Syne', 'DM Serif Display', serif", fontWeight: 800, fontSize: 'clamp(2rem, 4vw, 3.5rem)', lineHeight: '1.15', marginBottom: '10px', maxWidth: '640px', background: 'linear-gradient(90deg, #ffffff, #4361ee, #ffffff)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', animation: 'shimmer 4s linear infinite' }}>
                 {hero.headline}
               </h2>
               <p style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '13px', color: '#a1a1aa', lineHeight: '1.65', marginBottom: '16px', maxWidth: '560px' }}>
@@ -322,14 +336,17 @@ export default function NewsFeed() {
                 }}>Read Story →</button>
               </div>
             </div>
-          </a>
+            </a>
+            </div>
+          </div>
         ) : null}
 
         {/* Headlines ticker */}
         {headlines.length > 0 && (
           <div className="animate-in stagger-2" style={{
-            background: '#09090b',
-            borderBottom: '1px solid #1e1e22',
+            background: 'rgba(67,97,238,0.08)',
+            borderTop: '1px solid rgba(67,97,238,0.2)',
+            borderBottom: '1px solid rgba(67,97,238,0.2)',
             padding: '8px 0',
             overflow: 'hidden',
             position: 'relative',
@@ -371,18 +388,22 @@ export default function NewsFeed() {
               key={cat}
               onClick={() => setActiveCategory(cat)}
               style={{
-                padding: '9px 16px',
+                padding: '6px 14px',
                 border: 'none',
-                borderBottom: activeCategory === cat ? '2px solid #4361ee' : '2px solid transparent',
-                background: 'transparent',
-                color: activeCategory === cat ? '#f4f4f5' : '#71717a',
+                borderBottom: 'none',
+                background: activeCategory === cat ? '#4361ee' : 'transparent',
+                color: activeCategory === cat ? '#ffffff' : 'rgba(255,255,255,0.5)',
+                borderRadius: activeCategory === cat ? '6px' : '6px',
                 fontSize: '12px',
-                fontWeight: activeCategory === cat ? '500' : '400',
+                fontWeight: activeCategory === cat ? '600' : '400',
                 cursor: 'pointer',
                 fontFamily: "'IBM Plex Sans', sans-serif",
-                transition: 'all 0.12s',
+                transition: 'all 150ms ease',
                 whiteSpace: 'nowrap',
+                margin: '6px 4px',
               }}
+              onMouseEnter={e => { if (activeCategory !== cat) e.currentTarget.style.color = '#ffffff' }}
+              onMouseLeave={e => { if (activeCategory !== cat) e.currentTarget.style.color = 'rgba(255,255,255,0.5)' }}
             >{cat}</button>
           ))}
         </div>
