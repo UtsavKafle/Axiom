@@ -68,10 +68,10 @@ const OPPORTUNITIES = [
 const STACK_FILTERS = ['React', 'Python', 'Go', 'TypeScript', 'Rust', 'C++']
 
 const TYPE_COLORS = {
-  Internship:    { bg: 'rgba(67,97,238,0.1)',  color: '#6b83f0', border: 'rgba(67,97,238,0.25)' },
-  Hackathon:     { bg: 'rgba(239,68,68,0.1)',  color: '#f87171', border: 'rgba(239,68,68,0.25)' },
-  Fellowship:    { bg: 'rgba(6,182,212,0.1)',  color: '#22d3ee', border: 'rgba(6,182,212,0.25)' },
-  'Open Source': { bg: 'rgba(34,197,94,0.1)',  color: '#4ade80', border: 'rgba(34,197,94,0.25)' },
+  Internship:    { bg: 'rgba(67,97,238,0.15)',  color: '#4361ee', border: 'rgba(67,97,238,0.3)' },
+  Hackathon:     { bg: 'rgba(244,164,0,0.15)',  color: '#f4a400', border: 'rgba(244,164,0,0.3)' },
+  Fellowship:    { bg: 'rgba(34,197,94,0.15)',  color: '#22c55e', border: 'rgba(34,197,94,0.3)' },
+  'Open Source': { bg: 'rgba(168,85,247,0.15)', color: '#a855f7', border: 'rgba(168,85,247,0.3)' },
 }
 
 function urgencyColor(days) {
@@ -82,10 +82,15 @@ function urgencyColor(days) {
 
 function MatchBar({ score }) {
   const color = score >= 85 ? '#22c55e' : score >= 70 ? '#f4a400' : '#71717a'
+  const barBg = score > 80
+    ? 'linear-gradient(90deg, #4361ee, #22c55e)'
+    : score >= 50
+    ? 'linear-gradient(90deg, #f4a400, #4361ee)'
+    : color
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-      <div style={{ flex: 1, height: '3px', background: '#1e1e22', overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${score}%`, background: color }} />
+      <div style={{ flex: 1, height: '3px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${score}%`, background: barBg }} />
       </div>
       <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color, whiteSpace: 'nowrap' }}>{score}%</span>
     </div>
@@ -122,17 +127,18 @@ export default function Opportunities() {
         overflowY: 'auto',
       }}>
         {/* Type filter */}
-        <div className="animate-in stagger-1" style={{ padding: '16px', borderBottom: '1px solid #1e1e22' }}>
+        <div className="animate-in stagger-1 glass-card" style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', borderRadius: 0, marginBottom: '4px' }}>
           <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '700', fontSize: '9px', color: '#52525b', letterSpacing: '0.1em', marginBottom: '8px', textTransform: 'uppercase' }}>TYPE</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
             {['All', 'Internship', 'Hackathon', 'Fellowship', 'Open Source'].map(t => (
               <button key={t} onClick={() => setActiveType(t)} style={{
                 textAlign: 'left', padding: '7px 8px',
-                border: 'none', background: activeType === t ? '#111113' : 'transparent',
-                color: activeType === t ? '#f4f4f5' : '#71717a',
+                border: 'none',
+                background: activeType === t ? 'rgba(67,97,238,0.1)' : 'transparent',
+                color: activeType === t ? '#4361ee' : '#71717a',
                 fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '12px',
                 cursor: 'pointer', fontWeight: activeType === t ? '500' : '400',
-                borderLeft: activeType === t ? '2px solid #4361ee' : '2px solid transparent',
+                borderRadius: activeType === t ? '6px' : '0',
                 transition: 'all 0.1s',
               }}>{t}</button>
             ))}
@@ -140,7 +146,7 @@ export default function Opportunities() {
         </div>
 
         {/* Stack filter */}
-        <div className="animate-in stagger-2" style={{ padding: '16px', borderBottom: '1px solid #1e1e22' }}>
+        <div className="animate-in stagger-2 glass-card" style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', borderRadius: 0, marginBottom: '4px' }}>
           <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '700', fontSize: '9px', color: '#52525b', letterSpacing: '0.1em', marginBottom: '8px', textTransform: 'uppercase' }}>YOUR STACK</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
             {STACK_FILTERS.map(s => (
@@ -157,7 +163,7 @@ export default function Opportunities() {
         </div>
 
         {/* Options */}
-        <div className="animate-in stagger-3" style={{ padding: '16px', borderBottom: '1px solid #1e1e22' }}>
+        <div className="animate-in stagger-3 glass-card" style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', borderRadius: 0, marginBottom: '4px' }}>
           <div style={{ fontFamily: "'Space Mono', monospace", fontWeight: '700', fontSize: '9px', color: '#52525b', letterSpacing: '0.1em', marginBottom: '8px', textTransform: 'uppercase' }}>OPTIONS</div>
           <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
             <div
@@ -208,8 +214,8 @@ export default function Opportunities() {
 
         {/* Deadline tracker — sticky bar */}
         <div className="animate-in stagger-1" style={{
-          background: '#0d0d0f',
-          borderBottom: '1px solid #1e1e22',
+          background: 'rgba(239,68,68,0.08)',
+          borderBottom: '1px solid rgba(239,68,68,0.2)',
           padding: '10px 20px',
           display: 'flex',
           alignItems: 'center',
@@ -221,15 +227,16 @@ export default function Opportunities() {
             <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#52525b', letterSpacing: '0.08em' }}>DEADLINES</span>
           </div>
           {DEADLINES.map((d, i) => (
-            <div key={i} style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '5px 12px',
-              background: `${d.color}06`,
-              border: `1px solid ${d.color}20`,
-              borderLeft: `2px solid ${d.color}`,
-            }}>
+            <div key={i}
+              className={`glass-card${d.days <= 7 ? ' glow-red' : d.days <= 14 ? ' glow-amber' : ''}`}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '5px 12px',
+                borderLeft: `2px solid ${d.color}`,
+                borderRadius: '6px',
+              }}>
               <div>
                 <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '500', fontSize: '12px', color: '#f4f4f5' }}>{d.company}</span>
                 <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '11px', color: '#71717a' }}> — {d.role}</span>
@@ -278,14 +285,14 @@ export default function Opportunities() {
               <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '12px', color: '#71717a' }}>Try clearing some filters to see more results</div>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#1e1e22' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
               {filtered.map((op, i) => {
                 const typeStyle = TYPE_COLORS[op.type] || TYPE_COLORS.Internship
                 const urgency = urgencyColor(op.daysLeft)
                 return (
                   <div
                     key={op.id}
-                    className={`animate-in stagger-${Math.min(i + 3, 8)}`}
+                    className={`glass-card animate-in stagger-${Math.min(i + 3, 8)}`}
                     style={{
                       padding: '16px',
                       display: 'flex', flexDirection: 'column', gap: '10px',
@@ -293,8 +300,8 @@ export default function Opportunities() {
                       transition: 'background 0.1s',
                       cursor: 'default',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#111113' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = '#09090b' }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = 'rgba(67,97,238,0.3)' }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
                   >
                     {/* Type badge + company */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
@@ -305,7 +312,7 @@ export default function Opportunities() {
                         whiteSpace: 'nowrap', letterSpacing: '0.05em',
                       }}>{op.type.toUpperCase()}</span>
                       {op.remote && (
-                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#22c55e', background: 'rgba(34,197,94,0.08)', padding: '2px 5px', border: '1px solid rgba(34,197,94,0.2)' }}>REMOTE</span>
+                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#a1a1aa', background: 'rgba(255,255,255,0.08)', padding: '2px 5px', border: '1px solid rgba(255,255,255,0.15)' }}>REMOTE</span>
                       )}
                     </div>
 
@@ -319,6 +326,7 @@ export default function Opportunities() {
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontFamily: "'Space Mono', monospace", fontWeight: '700',
                           fontSize: '11px', color: op.companyColor, flexShrink: 0,
+                          boxShadow: '0 0 0 2px rgba(255,255,255,0.1)',
                         }}>{op.companyInitial}</div>
                         <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600', fontSize: '13px', color: '#f4f4f5' }}>{op.company}</div>
                       </div>
@@ -357,10 +365,10 @@ export default function Opportunities() {
                         color: '#fff', fontFamily: "'IBM Plex Sans', sans-serif",
                         fontWeight: '500', fontSize: '11px',
                         cursor: 'pointer',
-                        transition: 'opacity 0.12s',
+                        transition: 'all 200ms ease',
                       }}
-                        onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-                        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                        onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.boxShadow = '0 0 24px rgba(67,97,238,0.25), 0 0 48px rgba(67,97,238,0.1)' }}
+                        onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.boxShadow = 'none' }}
                       >Apply →</button>
                     </div>
                   </div>

@@ -70,31 +70,35 @@ function FeedbackRow({ item, accentColor, typeLabel }) {
 
 function EmptyState() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '20px', padding: '40px' }}>
-      <svg width="80" height="80" viewBox="0 0 120 120">
+    <div className="glass-card" style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      minHeight: '400px', gap: '28px', padding: '48px 40px',
+      animation: 'glowPulse 3s ease-in-out infinite',
+    }}>
+      <svg width="64" height="64" viewBox="0 0 120 120">
         <polygon points="60,10 110,85 10,85" fill="rgba(67,97,238,0.06)" stroke="rgba(67,97,238,0.3)" strokeWidth="1" />
         <polygon points="60,30 90,75 30,75" fill="none" stroke="rgba(67,97,238,0.15)" strokeWidth="1" strokeDasharray="3 3" />
         <circle cx="60" cy="55" r="10" fill="rgba(67,97,238,0.08)" stroke="rgba(67,97,238,0.3)" strokeWidth="1" />
-        <line x1="60" y1="10" x2="60" y2="30" stroke="rgba(67,97,238,0.2)" strokeWidth="1" />
         <circle cx="60" cy="8" r="2.5" fill="#4361ee" />
       </svg>
       <div style={{ textAlign: 'center' }}>
-        <div style={{ fontFamily: "'DM Serif Display', serif", fontWeight: 400, fontSize: '18px', color: '#f4f4f5', marginBottom: '6px' }}>
+        <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '22px', color: '#f4f4f5', marginBottom: '10px' }}>
           Ready for Analysis
         </div>
-        <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '12px', color: '#71717a', lineHeight: '1.6', maxWidth: '240px' }}>
+        <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '13px', color: '#71717a', lineHeight: '1.65', maxWidth: '280px' }}>
           Upload your resume on the left and our AI will give you detailed, CS-specific feedback in seconds.
         </div>
       </div>
-      <div style={{ display: 'flex', gap: '6px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', width: '100%', maxWidth: '320px' }}>
         {['ATS Score', 'Impact', 'Keywords', 'Format'].map(tag => (
-          <span key={tag} style={{
-            padding: '3px 8px',
-            background: 'rgba(67,97,238,0.06)',
-            border: '1px solid rgba(67,97,238,0.15)',
+          <span key={tag} className="glass-card" style={{
+            padding: '12px 14px',
+            border: '1px solid rgba(67,97,238,0.2)',
             fontFamily: "'Space Mono', monospace",
-            fontSize: '9px',
+            fontSize: '11px',
             color: '#4361ee',
+            textAlign: 'center',
+            display: 'block',
           }}>{tag}</span>
         ))}
       </div>
@@ -190,14 +194,13 @@ export default function Resume() {
   return (
     <div style={{ display: 'flex', height: '100%' }}>
       {/* Left: Upload */}
-      <div style={{
+      <div className="glass-card" style={{ borderRadius: 0,
         width: '44%',
-        borderRight: '1px solid #1e1e22',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
         padding: '28px 24px',
         display: 'flex',
         flexDirection: 'column',
         gap: '16px',
-        background: '#0d0d0f',
         overflow: 'hidden',
       }}>
         <div className="animate-in stagger-1" style={{ flexShrink: 0 }}>
@@ -214,9 +217,11 @@ export default function Resume() {
           {['Upload PDF', 'Paste Text'].map((mode, i) => (
             <button key={mode} onClick={() => setPasteMode(i === 1)} style={{
               flex: 1, padding: '7px',
-              background: pasteMode === (i === 1) ? 'rgba(67,97,238,0.15)' : 'transparent',
-              border: pasteMode === (i === 1) ? '1px solid rgba(67,97,238,0.25)' : '1px solid transparent',
-              color: pasteMode === (i === 1) ? '#6b83f0' : '#71717a',
+              background: pasteMode === (i === 1) ? '#4361ee' : 'rgba(255,255,255,0.03)',
+              border: pasteMode === (i === 1) ? 'none' : '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '6px',
+              backdropFilter: 'blur(12px)',
+              color: pasteMode === (i === 1) ? '#ffffff' : '#71717a',
               fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '12px', fontWeight: '500',
               cursor: 'pointer', transition: 'all 0.12s',
             }}>{mode}</button>
@@ -237,19 +242,21 @@ export default function Resume() {
                 onClick={() => fileRef.current.click()}
                 style={{
                   flex: 1,
-                  border: `1px dashed ${dragOver ? '#4361ee' : '#2a2a32'}`,
+                  border: `2px dashed ${dragOver ? '#4361ee' : 'rgba(67,97,238,0.3)'}`,
+                  borderRadius: '12px',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '14px',
                   cursor: 'pointer',
-                  background: dragOver ? 'rgba(67,97,238,0.04)' : '#111113',
+                  background: 'rgba(67,97,238,0.04)',
+                  boxShadow: dragOver ? '0 0 24px rgba(67,97,238,0.25), 0 0 48px rgba(67,97,238,0.1)' : 'none',
                   transition: 'all 0.15s ease',
                   minHeight: '240px',
                 }}
               >
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(67,97,238,0.4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4361ee" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/>
                   <line x1="12" y1="3" x2="12" y2="15"/>
                 </svg>
@@ -261,14 +268,19 @@ export default function Resume() {
                     PDF, Word, or plain text · max 5MB
                   </div>
                 </div>
-                <div style={{
-                  padding: '6px 16px',
-                  background: 'transparent',
-                  border: '1px solid rgba(67,97,238,0.3)',
-                  fontFamily: "'IBM Plex Sans', sans-serif",
-                  fontSize: '12px',
-                  color: '#6b83f0',
-                }}>Browse files</div>
+                <div
+                  className="gradient-border"
+                  style={{
+                    padding: '6px 16px',
+                    fontFamily: "'IBM Plex Sans', sans-serif",
+                    fontSize: '12px',
+                    color: '#4361ee',
+                    cursor: 'pointer',
+                    transition: 'box-shadow 200ms ease',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 24px rgba(67,97,238,0.25), 0 0 48px rgba(67,97,238,0.1)' }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
+                >Browse files</div>
               </div>
             ) : (
               <div className="animate-in stagger-3" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px', minHeight: 0 }}>
