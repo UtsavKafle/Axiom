@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
@@ -67,7 +67,8 @@ function Pill({ label, active, onClick, accent = 'blue' }) {
 
 export default function Login() {
   const { user, loading, refreshProfile } = useAuth()
-  const [mode, setMode] = useState('login')
+  const location = useLocation()
+  const [mode, setMode] = useState(location.state?.mode || 'login')
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
