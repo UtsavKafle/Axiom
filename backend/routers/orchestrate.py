@@ -9,6 +9,7 @@ import httpx
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, field_validator
+from utils.token_tracker import track_token_usage
 
 load_dotenv()
 
@@ -163,8 +164,8 @@ async def _get_iam_token(client: httpx.AsyncClient) -> str:
 
 # ── watsonx.ai generation ─────────────────────────────────────────────────────
 
-async def _call_watsonx(client: httpx.AsyncClient, access_token: str, messages: list, max_new_tokens: int = 1500) -> str:
-    """Call the watsonx.ai chat endpoint and return the assistant message content."""
+async def _call_watsonx(client: httpx.AsyncClient, access_token: str, messages: list, max_new_tokens: int = 1500) -> tuple[str, dict]:
+    """Call the watsonx.ai chat endpoint and return (content, raw_response)."""
     url = f"{WATSONX_URL}/ml/v1/text/chat?version=2023-05-29"
     payload = {
         "model_id": "ibm/granite-4-h-small",
@@ -189,7 +190,7 @@ async def _call_watsonx(client: httpx.AsyncClient, access_token: str, messages: 
         )
         resp.raise_for_status()
         data = resp.json()
-        return data["choices"][0]["message"]["content"]
+        return data["choices"][0]["message"]["content"], data
     except httpx.TimeoutException:
         logger.error("watsonx.ai generation request timed out")
         raise HTTPException(status_code=504, detail="AI service timed out")
@@ -321,7 +322,7 @@ user_code:
     # Step 4 — Call watsonx.ai
     async with httpx.AsyncClient() as client:
         access_token = await _get_iam_token(client)
-        generated_text = await _call_watsonx(client, access_token, messages)
+        generated_text, _wx_data = await _call_watsonx(client, access_token, messages)
 
     # Step 5 — Parse response
     try:
@@ -331,7 +332,9 @@ user_code:
         raise HTTPException(status_code=500, detail="Failed to process AI feedback")
 
     # Step 6 — Validate and return
-    return _validate_and_clean(feedback)
+    result = _validate_and_clean(feedback)
+    track_token_usage("orchestrate", "review_code", _wx_data)
+    return result
 
 
 @router.get("/health")

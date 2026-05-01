@@ -182,95 +182,108 @@ export default function Home() {
           }}>v2.4</span>
         </div>
 
-        {/* Headline */}
-        <div style={{ marginBottom: '28px' }}>
-          <div style={{
-            fontFamily: 'Space Mono, monospace', fontSize: '11px',
-            color: '#4361ee', letterSpacing: '0.2em', marginBottom: '16px',
-            textTransform: 'uppercase',
-          }}>
-            [ CS_CAREER_OS ]
-          </div>
-          <h1 style={{
-            fontFamily: 'Syne, sans-serif',
-            fontWeight: 800,
-            fontSize: 'clamp(32px, 3.5vw, 52px)',
-            lineHeight: 1.1,
-            color: '#fff',
-            letterSpacing: '-0.03em',
-            marginBottom: '16px',
-          }}>
-            Your CS Career,<br />
-            <span style={{ color: '#4361ee' }}>Operating</span> System.
-          </h1>
-          <p style={{
-            fontFamily: 'Inter, sans-serif',
-            fontSize: '15px',
-            color: '#64748b',
-            lineHeight: 1.7,
-            maxWidth: '420px',
-          }}>
-            One platform for news, personalized roadmaps, resume review,
-            interview prep, and opportunities — built for CS students,
-            powered by agentic AI.
-          </p>
-        </div>
+        {/* 2-column grid: content left, terminal right */}
+        <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '40px', alignItems: 'center' }}>
 
-        {/* Feature list */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '40px' }}>
-          {FEATURES.map((f, i) => (
-            <div key={f.label} className={`animate-in stagger-${i + 1}`} style={{
-              display: 'flex', alignItems: 'center', gap: '12px',
+          {/* Left column — heading, subtitle, bullets */}
+          <div>
+            {/* Headline */}
+            <div style={{ marginBottom: '28px' }}>
+              <div style={{
+                fontFamily: 'Space Mono, monospace', fontSize: '14px',
+                color: '#4361ee', letterSpacing: '0.2em', marginBottom: '16px',
+                textTransform: 'uppercase',
+              }}>
+                [ CS_CAREER_OS ]
+              </div>
+              <h1 style={{
+                fontFamily: 'Syne, sans-serif',
+                fontWeight: 800,
+                fontSize: 'clamp(3rem, 5vw, 4.5rem)',
+                lineHeight: 1.1,
+                color: '#fff',
+                letterSpacing: '-0.03em',
+                marginBottom: '16px',
+              }}>
+                Your CS Career,<br />
+                <span style={{ color: '#4361ee' }}>Operating</span> System.
+              </h1>
+              <p style={{
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '18px',
+                color: '#64748b',
+                lineHeight: 1.7,
+              }}>
+                One platform for news, personalized roadmaps, resume review,
+                interview prep, and opportunities — built for CS students,
+                powered by agentic AI.
+              </p>
+            </div>
+
+            {/* Feature list */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {FEATURES.map((f, i) => (
+                <div key={f.label} className={`animate-in stagger-${i + 1}`} style={{
+                  display: 'flex', alignItems: 'center', gap: '12px',
+                }}>
+                  <div style={{
+                    width: '6px', height: '6px', borderRadius: '50%',
+                    background: f.color,
+                    boxShadow: `0 0 8px ${f.color}`,
+                    flexShrink: 0,
+                  }} />
+                  <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: '15px', color: '#e2e8f0' }}>
+                    {f.label}
+                  </span>
+                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#64748b' }}>
+                    — {f.desc}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right column — terminal, vertically centered */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {/* Terminal */}
+            <div style={{
+              background: 'rgba(10,10,15,0.8)',
+              border: '1px solid rgba(67,97,238,0.2)',
+              borderRadius: '10px',
+              padding: '20px',
+              width: '100%',
+              maxHeight: '280px',
+              overflow: 'hidden',
+              fontFamily: 'Space Mono, monospace',
+              fontSize: '11px',
+              position: 'relative',
             }}>
               <div style={{
-                width: '6px', height: '6px', borderRadius: '50%',
-                background: f.color,
-                boxShadow: `0 0 8px ${f.color}`,
-                flexShrink: 0,
-              }} />
-              <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: '13px', color: '#e2e8f0' }}>
-                {f.label}
-              </span>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#64748b' }}>
-                — {f.desc}
-              </span>
+                position: 'absolute', top: '-1px', left: '-1px', right: '-1px', bottom: '-1px',
+                borderRadius: '10px',
+                pointerEvents: 'none',
+              }} className="bracket-corner" />
+              <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
+                {['#ef4444', '#f4a400', '#22c55e'].map(c => (
+                  <div key={c} style={{ width: '8px', height: '8px', borderRadius: '50%', background: c, opacity: 0.7 }} />
+                ))}
+              </div>
+              {TERMINAL_LINES.slice(0, terminalLine).map((line, i) => (
+                <div key={i} style={{
+                  color: i === terminalLine - 1 ? '#e2e8f0' : '#64748b',
+                  marginBottom: '4px',
+                  lineHeight: 1.8,
+                  transition: 'color 0.3s',
+                }}>
+                  {line}
+                  {i === terminalLine - 1 && terminalLine < TERMINAL_LINES.length && (
+                    <span style={{ animation: 'pulseDot 1s infinite', display: 'inline-block', marginLeft: '2px', color: '#4361ee' }}>█</span>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-
-        {/* Terminal */}
-        <div style={{
-          background: 'rgba(10,10,15,0.8)',
-          border: '1px solid rgba(67,97,238,0.2)',
-          borderRadius: '10px',
-          padding: '16px 20px',
-          maxWidth: '400px',
-          fontFamily: 'Space Mono, monospace',
-          fontSize: '11px',
-          position: 'relative',
-        }}>
-          <div style={{
-            position: 'absolute', top: '-1px', left: '-1px', right: '-1px', bottom: '-1px',
-            borderRadius: '10px',
-            pointerEvents: 'none',
-          }} className="bracket-corner" />
-          <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
-            {['#ef4444', '#f4a400', '#22c55e'].map(c => (
-              <div key={c} style={{ width: '8px', height: '8px', borderRadius: '50%', background: c, opacity: 0.7 }} />
-            ))}
           </div>
-          {TERMINAL_LINES.slice(0, terminalLine).map((line, i) => (
-            <div key={i} style={{
-              color: i === terminalLine - 1 ? '#e2e8f0' : '#64748b',
-              marginBottom: '4px',
-              transition: 'color 0.3s',
-            }}>
-              {line}
-              {i === terminalLine - 1 && terminalLine < TERMINAL_LINES.length && (
-                <span style={{ animation: 'pulseDot 1s infinite', display: 'inline-block', marginLeft: '2px', color: '#4361ee' }}>█</span>
-              )}
-            </div>
-          ))}
+
         </div>
       </div>
 

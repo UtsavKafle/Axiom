@@ -21,7 +21,6 @@ export default function ProfilePanel({ onClose, onEditProfile }) {
     function handle(e) {
       if (panelRef.current && !panelRef.current.contains(e.target)) onClose()
     }
-    // Small delay so the click that opened the panel doesn't immediately close it
     const id = setTimeout(() => document.addEventListener('mousedown', handle), 50)
     return () => { clearTimeout(id); document.removeEventListener('mousedown', handle) }
   }, [onClose])
@@ -35,7 +34,6 @@ export default function ProfilePanel({ onClose, onEditProfile }) {
 
   const memberSince = user?.created_at
   const email = user?.email || '—'
-
   const hasCareerProfile = !!careerProfile
 
   return (
@@ -60,7 +58,7 @@ export default function ProfilePanel({ onClose, onEditProfile }) {
         </div>
 
         {/* Avatar + email */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
             width: '36px', height: '36px',
             background: '#4361ee',
@@ -80,35 +78,10 @@ export default function ProfilePanel({ onClose, onEditProfile }) {
             </div>
           </div>
         </div>
-
-        <button
-          onClick={() => { onClose(); signOut() }}
-          style={{
-            width: '100%',
-            padding: '7px 0',
-            background: 'transparent',
-            border: '1px solid #1e1e22',
-            color: '#71717a',
-            fontFamily: "'Space Mono', monospace",
-            fontSize: '10px',
-            cursor: 'pointer',
-            letterSpacing: '0.06em',
-            transition: 'all 0.12s',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.06)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; e.currentTarget.style.color = '#ef4444' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#1e1e22'; e.currentTarget.style.color = '#71717a' }}
-        >
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-          </svg>
-          SIGN OUT
-        </button>
       </div>
 
       {/* Section B — Career Profile */}
-      <div style={{ padding: '16px' }}>
+      <div style={{ padding: '16px', borderBottom: '1px solid #1e1e22' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
           <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '9px', color: '#4361ee', letterSpacing: '0.1em' }}>
             CAREER PROFILE
@@ -194,6 +167,34 @@ export default function ProfilePanel({ onClose, onEditProfile }) {
             </button>
           </div>
         )}
+      </div>
+
+      {/* Section C — Sign Out */}
+      <div style={{ padding: '16px' }}>
+        <button
+          onClick={() => { onClose(); signOut() }}
+          style={{
+            width: '100%',
+            padding: '7px 0',
+            background: 'transparent',
+            border: '1px solid #1e1e22',
+            color: '#71717a',
+            fontFamily: "'Space Mono', monospace",
+            fontSize: '10px',
+            cursor: 'pointer',
+            letterSpacing: '0.06em',
+            transition: 'all 0.12s',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.06)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)'; e.currentTarget.style.color = '#ef4444' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#1e1e22'; e.currentTarget.style.color = '#71717a' }}
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          SIGN OUT
+        </button>
       </div>
     </div>
   )

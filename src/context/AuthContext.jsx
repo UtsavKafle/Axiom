@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
+  const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [careerProfile, setCareerProfile] = useState(null)
@@ -16,10 +18,16 @@ export function AuthProvider({ children }) {
       else setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null)
-      if (session?.user) fetchAllProfiles(session.user.id)
-      else { setProfile(null); setCareerProfile(null); setLoading(false) }
+      if (session?.user) {
+        fetchAllProfiles(session.user.id)
+      } else {
+        setProfile(null)
+        setCareerProfile(null)
+        setLoading(false)
+        if (event === 'SIGNED_OUT') navigate('/', { replace: true })
+      }
     })
 
     return () => subscription.unsubscribe()

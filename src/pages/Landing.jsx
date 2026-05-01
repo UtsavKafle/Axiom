@@ -249,7 +249,7 @@ export default function Landing() {
   if (user) { navigate('/news', { replace: true }); return null }
 
   const goLogin = () => navigate('/login')
-  const goSignup = () => navigate('/login', { state: { mode: 'signup' } })
+  const goSignup = () => navigate('/signup')
 
   return (
     <div style={{ background: '#09090b', color: '#f4f4f5', minHeight: '100vh', position: 'relative' }}>

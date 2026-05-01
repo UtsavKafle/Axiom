@@ -12,6 +12,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from db.supabase_client import supabase
+from utils.token_tracker import track_token_usage
 
 load_dotenv()
 
@@ -193,8 +194,8 @@ async def _call_watsonx(
     access_token: str,
     messages: list,
     max_new_tokens: int = 1500,
-) -> str:
-    """Call the watsonx.ai chat endpoint and return the assistant message content."""
+) -> tuple[str, dict]:
+    """Call the watsonx.ai chat endpoint and return (content, raw_response)."""
     url = f"{WATSONX_URL}/ml/v1/text/chat?version=2023-05-29"
     payload = {
         "model_id": "ibm/granite-4-h-small",
@@ -219,7 +220,7 @@ async def _call_watsonx(
         )
         resp.raise_for_status()
         data = resp.json()
-        return data["choices"][0]["message"]["content"]
+        return data["choices"][0]["message"]["content"], data
     except httpx.TimeoutException:
         logger.error("watsonx.ai roadmap generation request timed out")
         raise HTTPException(status_code=504, detail="AI service timed out")
@@ -479,7 +480,7 @@ async def generate_roadmap(body: GenerateRequest):
                 {"role": "user",   "content": user_message},
             ]
 
-            generated_text = await _call_watsonx(
+            generated_text, _wx_data = await _call_watsonx(
                 client, access_token, messages, max_new_tokens=2500
             )
 
@@ -494,6 +495,7 @@ async def generate_roadmap(body: GenerateRequest):
 
             phase_data = _validate_phase(phase_data, phase_order)
             phases.append(phase_data)
+            track_token_usage("roadmap", "generate_roadmap", _wx_data)
 
             # Accumulate node IDs so the next phase can reference them as dependencies
             for node in phase_data.get("nodes", []):
@@ -657,7 +659,7 @@ async def recalibrate_roadmap(body: RecalibrateRequest):
                 {"role": "user",   "content": user_message},
             ]
 
-            generated_text = await _call_watsonx(
+            generated_text, _wx_data = await _call_watsonx(
                 client, access_token, messages, max_new_tokens=2500
             )
 
@@ -672,6 +674,7 @@ async def recalibrate_roadmap(body: RecalibrateRequest):
 
             phase_data = _validate_phase(phase_data, phase_order)
             phases.append(phase_data)
+            track_token_usage("roadmap", "recalibrate", _wx_data)
 
             for node in phase_data.get("nodes", []):
                 node_id = node.get("id")
@@ -790,7 +793,7 @@ async def substitute_topic(body: SubstituteRequest):
 
     async with httpx.AsyncClient() as client:
         access_token = await _get_iam_token(client)
-        generated_text = await _call_watsonx(
+        generated_text, _wx_data = await _call_watsonx(
             client, access_token, messages, max_new_tokens=600
         )
 
@@ -815,4 +818,5 @@ async def substitute_topic(body: SubstituteRequest):
         raise HTTPException(status_code=500, detail="AI returned invalid node structure")
 
     node_data = _inject_resources_single(node_data)
+    track_token_usage("roadmap", "substitute", _wx_data)
     return node_data

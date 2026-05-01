@@ -2,6 +2,7 @@
 
 @theme {
   --font-display: 'DM Serif Display', serif;
+  --font-heading: 'Syne', sans-serif;
   --font-sans: 'IBM Plex Sans', sans-serif;
   --font-mono: 'Space Mono', monospace;
 
@@ -61,17 +62,6 @@ html, body, #root {
   background-size: 48px 48px;
 }
 
-/* Flat surface card — replaces glassmorphism */
-.glass-card {
-  background: #111113;
-  border: 1px solid #1e1e22;
-  border-radius: 3px;
-  transition: border-color 0.15s ease;
-}
-
-.glass-card:hover {
-  border-color: #2a2a32;
-}
 
 /* Corner brackets — kept but subtle */
 .bracket-corner {

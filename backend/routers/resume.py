@@ -7,6 +7,7 @@ from typing import Optional
 
 import httpx
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from utils.token_tracker import track_token_usage
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +69,7 @@ async def _get_iam_token(client: httpx.AsyncClient) -> str:
     return token
 
 
-async def _call_watsonx(client: httpx.AsyncClient, token: str, user_msg: str) -> str:
+async def _call_watsonx(client: httpx.AsyncClient, token: str, user_msg: str) -> tuple[str, dict]:
     url = f"{WATSONX_URL}/ml/v1/text/chat?version=2023-05-29"
     payload = {
         "model_id": "ibm/granite-4-h-small",
@@ -94,7 +95,8 @@ async def _call_watsonx(client: httpx.AsyncClient, token: str, user_msg: str) ->
         timeout=60.0,
     )
     resp.raise_for_status()
-    return resp.json()["choices"][0]["message"]["content"]
+    data = resp.json()
+    return data["choices"][0]["message"]["content"], data
 
 
 # ── PDF extraction ─────────────────────────────────────────────────────────────
@@ -476,9 +478,10 @@ async def analyze_resume(
     feedback_prompt = _build_feedback_prompt(resume_text, scores, findings)
     async with httpx.AsyncClient() as client:
         token = await _get_iam_token(client)
-        raw   = await _call_watsonx(client, token, feedback_prompt)
+        raw, _wx_data = await _call_watsonx(client, token, feedback_prompt)
 
     feedback = _parse_feedback(raw)
+    track_token_usage("resume", "analyze_resume", _wx_data)
 
     # 5 — Merge and return
     return {**scores, **feedback}
