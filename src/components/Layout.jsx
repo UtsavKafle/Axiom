@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabase'
 import OnboardingModal from './onboarding/OnboardingModal'
 import ProfilePanel from './profile/ProfilePanel'
 
@@ -77,13 +78,22 @@ export default function Layout({ children }) {
 
   const { user, profile, careerProfile, loading, signOut } = useAuth()
 
-  // Auto-show onboarding when user has no career profile
+  // Auto-show onboarding only for users with no career profile row
   useEffect(() => {
-    if (!loading && user && careerProfile === null) {
-      setIsEditMode(false)
-      setOnboardingOpen(true)
-    }
-  }, [loading, user, careerProfile])
+    if (loading || !user) return
+    supabase
+      .from('user_profiles')
+      .select('user_id')
+      .eq('user_id', user.id)
+      .single()
+      .then(({ data, error }) => {
+        if (error && error.code !== 'PGRST116') return // real DB error — fail safe, don't show
+        if (!data) {
+          setIsEditMode(false)
+          setOnboardingOpen(true)
+        }
+      })
+  }, [loading, user])
 
   const displayName = profile?.name || user?.email?.split('@')[0] || 'User'
   const nameParts = displayName.trim().split(' ')

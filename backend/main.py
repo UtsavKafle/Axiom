@@ -3,7 +3,7 @@ load_dotenv()
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import news, roadmap, resume, interview, opportunities, orchestrate, admin
+from routers import news, roadmap, resume, interview, opportunities, orchestrate, admin, resources
 
 app = FastAPI(title="Axiom API")
 
@@ -28,6 +28,7 @@ app.include_router(interview.router, prefix="/interview", tags=["interview"])
 app.include_router(opportunities.router, prefix="/opportunities", tags=["opportunities"])
 app.include_router(orchestrate.router, prefix="/review", tags=["review"])
 app.include_router(admin.router, prefix="/token-usage", tags=["admin"])
+app.include_router(resources.router, prefix="/roadmap", tags=["roadmap"])
 
 
 @app.get("/health")

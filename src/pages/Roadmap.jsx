@@ -63,6 +63,17 @@ export default function Roadmap() {
   const [selectedNode, setSelectedNode] = useState(null)
   const [drawerOpen,   setDrawerOpen]   = useState(false)
   const [marking,      setMarking]      = useState(false)
+  const [studyMode,    setStudyMode]    = useState(false)
+  const [bootSequence, setBootSequence] = useState(false)
+  const [bootLine,     setBootLine]     = useState(0)
+
+  // ── Node resources ────────────────────────────────────────────────────────────
+  const [nodeResources,    setNodeResources]    = useState(null)
+  const [resourcesLoading, setResourcesLoading] = useState(false)
+  const [resourcesError,   setResourcesError]   = useState(false)
+
+  // ── Study checklist (local-only, resets on each drawer open) ─────────────────
+  const [checkedItems, setCheckedItems] = useState(new Set())
 
   // ── Recalibration ────────────────────────────────────────────────────────────
   const isRecalibratingRef = useRef(false)
@@ -242,10 +253,62 @@ export default function Roadmap() {
 
   // ── Node drawer actions ───────────────────────────────────────────────────────
 
-  function openNode(node) {
+  async function openNode(node) {
     if (editMode) return
     setSelectedNode(node)
     setDrawerOpen(true)
+    setNodeResources(null)
+    setResourcesError(false)
+    setResourcesLoading(false)
+    setCheckedItems(new Set())
+
+    const rawNode = rawRoadmap?.phases
+      ?.flatMap(p => p.nodes || [])
+      ?.find(n => n.id === node.id)
+
+    if (rawNode?.fetched_resources && Object.keys(rawNode.fetched_resources).length > 0) {
+      setNodeResources(rawNode.fetched_resources)
+      return
+    }
+
+    setResourcesLoading(true)
+    try {
+      const resp = await fetch(`${BACKEND}/roadmap/node-resources`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          user_id:           user.id,
+          node_id:           node.id,
+          topic_title:       node.label,
+          topic_description: node.desc,
+        }),
+      })
+      if (!resp.ok) throw new Error(`Resources fetch failed: ${resp.status}`)
+      const data = await resp.json()
+      setNodeResources(data)
+    } catch (err) {
+      console.error('[Roadmap] node resources fetch failed:', err)
+      setResourcesError(true)
+    } finally {
+      setResourcesLoading(false)
+    }
+  }
+
+  function handleStartTopic() {
+    setBootSequence(true)
+    setBootLine(0)
+    const lines = 4
+    for (let i = 1; i <= lines; i++) {
+      setTimeout(() => {
+        setBootLine(i)
+        if (i === lines) {
+          setTimeout(() => {
+            setBootSequence(false)
+            setStudyMode(true)
+          }, 500)
+        }
+      }, i * 480)
+    }
   }
 
   async function startTopic() {
@@ -406,6 +469,98 @@ export default function Roadmap() {
     if (duration > 0) setTimeout(() => setToast(null), duration)
   }
 
+  // ── Add suggested node ────────────────────────────────────────────────────────
+
+  async function handleAddSuggestedNode(suggestedNode) {
+    if (!rawRoadmap || !selectedNode) return
+
+    const newNodeId = 'topic_' + suggestedNode.title.toLowerCase().replace(/\s+/g, '_')
+
+    const targetPhaseIdx = rawRoadmap.phases.findIndex(p =>
+      p.nodes?.some(n => n.id === selectedNode.id)
+    )
+    if (targetPhaseIdx === -1) return
+
+    const newRawNode = {
+      id:                newNodeId,
+      title:             suggestedNode.title,
+      description:       suggestedNode.description,
+      estimated_hours:   suggestedNode.estimated_hours,
+      difficulty:        suggestedNode.difficulty,
+      dependencies:      [],
+      resources:         [],
+      question_topics:   [],
+      substitutes:       [],
+      status:            'locked',
+      fetched_resources: null,
+    }
+
+    const nextRaw = {
+      ...rawRoadmap,
+      phases: rawRoadmap.phases.map((phase, idx) =>
+        idx === targetPhaseIdx
+          ? { ...phase, nodes: [...phase.nodes, newRawNode] }
+          : phase
+      ),
+    }
+
+    const progressMap = {}
+    phases.flatMap(p => p.nodes).forEach(n => {
+      if (n.status === 'completed')        progressMap[n.id] = { status: 'completed' }
+      else if (n.status === 'in-progress') progressMap[n.id] = { status: 'in_progress' }
+    })
+
+    setRawRoadmap(nextRaw)
+    setPhases(buildPhases(nextRaw, progressMap))
+
+    const now = new Date().toISOString()
+    await supabase.from('user_roadmaps').upsert(
+      {
+        user_id:              user.id,
+        roadmap:              nextRaw,
+        generated_at:         rawRoadmap.meta?.generated_at || now,
+        last_recalibrated_at: roadmapMeta?.last_recalibrated_at || now,
+      },
+      { onConflict: 'user_id' }
+    )
+
+    showToast('NODE ADDED TO ROADMAP')
+  }
+
+  async function handleRemoveSuggestedNode(title) {
+    if (!rawRoadmap) return
+
+    const nextRaw = {
+      ...rawRoadmap,
+      phases: rawRoadmap.phases.map(phase => ({
+        ...phase,
+        nodes: phase.nodes.filter(n => n.title.toLowerCase() !== title.toLowerCase()),
+      })),
+    }
+
+    const progressMap = {}
+    phases.flatMap(p => p.nodes).forEach(n => {
+      if (n.status === 'completed')        progressMap[n.id] = { status: 'completed' }
+      else if (n.status === 'in-progress') progressMap[n.id] = { status: 'in_progress' }
+    })
+
+    setRawRoadmap(nextRaw)
+    setPhases(buildPhases(nextRaw, progressMap))
+
+    const now = new Date().toISOString()
+    await supabase.from('user_roadmaps').upsert(
+      {
+        user_id:              user.id,
+        roadmap:              nextRaw,
+        generated_at:         rawRoadmap.meta?.generated_at || now,
+        last_recalibrated_at: roadmapMeta?.last_recalibrated_at || now,
+      },
+      { onConflict: 'user_id' }
+    )
+
+    showToast('NODE REMOVED')
+  }
+
   // ── Derived counts ────────────────────────────────────────────────────────────
 
   const allNodes       = phases.flatMap(p => p.nodes)
@@ -455,6 +610,7 @@ export default function Roadmap() {
   // ── Main render ───────────────────────────────────────────────────────────────
 
   const isRecalibratingToast = toast?.includes('RECALIBRAT')
+  const isRemoveToast        = toast?.includes('REMOVED')
 
   return (
     <div style={{ display: 'flex', height: '100%', position: 'relative' }}>
@@ -710,93 +866,318 @@ export default function Roadmap() {
       {/* ── Node drawer ───────────────────────────────────────────────────────── */}
       {drawerOpen && selectedNode && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)' }} onClick={() => setDrawerOpen(false)} />
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)' }} onClick={() => { setDrawerOpen(false); setStudyMode(false); setBootSequence(false) }} />
           <div style={{
             width: '380px', background: '#0d0d0f', borderLeft: '1px solid #1e1e22',
-            height: '100vh', padding: '28px 24px', overflowY: 'auto',
+            height: '100vh', maxHeight: '100vh', padding: '28px 24px', overflowY: 'auto',
             position: 'relative', zIndex: 1, animation: 'slideIn 0.2s ease',
           }}>
-            <style>{`@keyframes slideIn { from { transform: translateX(32px); opacity: 0; } to { transform: none; opacity: 1; } }`}</style>
+            <style>{`
+              @keyframes slideIn { from { transform: translateX(32px); opacity: 0; } to { transform: none; opacity: 1; } }
+              @keyframes terminalFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+            `}</style>
 
-            <button onClick={() => setDrawerOpen(false)} style={{
+            {/* Boot sequence overlay */}
+            {bootSequence && (
+              <div style={{
+                position: 'absolute', inset: 0, zIndex: 10, background: '#09090b',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <div style={{
+                  position: 'absolute', inset: 0, pointerEvents: 'none',
+                  background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px)',
+                  opacity: 0.04,
+                }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '0 32px', width: '100%' }}>
+                  {[
+                    '> Initializing study session...',
+                    `> Loading resources for ${selectedNode.label}...`,
+                    '> Resolving dependencies...',
+                    '> Ready.',
+                  ].map((line, i) => (
+                    bootLine > i ? (
+                      <div key={i} style={{ animation: 'terminalFadeIn 0.3s ease forwards', display: 'flex' }}>
+                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '13px', color: '#4361ee' }}>{line.slice(0, 2)}</span>
+                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '13px', color: '#f4f4f5' }}>{line.slice(2)}</span>
+                      </div>
+                    ) : null
+                  ))}
+                  {bootLine >= 4 && (
+                    <span style={{
+                      fontFamily: "'Space Mono', monospace", fontSize: '13px', color: '#4361ee',
+                      animation: 'blink 1s step-end infinite',
+                    }}>_</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* × close button — always on top via zIndex */}
+            <button onClick={() => { setDrawerOpen(false); setStudyMode(false); setBootSequence(false) }} style={{
               position: 'absolute', top: '16px', right: '16px',
               background: '#111113', border: '1px solid #1e1e22', color: '#71717a',
               width: '28px', height: '28px', cursor: 'pointer', fontSize: '14px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
+              zIndex: 20,
             }}>×</button>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-              <div style={{ filter: `drop-shadow(0 0 8px ${selectedNode.status === 'in-progress' ? 'rgba(244,164,0,0.7)' : 'rgba(67,97,238,0.7)'})` }}>
+            {/* Study mode view */}
+            {studyMode && (
+              <div style={{
+                position: 'absolute', inset: 0, zIndex: 5, background: '#0d0d0f',
+                display: 'flex', flexDirection: 'column', overflow: 'hidden',
+              }}>
+                {/* Sticky header */}
                 <div style={{
-                  width: '44px', height: '44px',
-                  clipPath: 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
-                  background: selectedNode.status === 'in-progress' ? 'rgba(244,164,0,0.1)' : '#4361ee',
-                  border: selectedNode.status === 'in-progress' ? '2px solid #f4a400' : 'none',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '16px', color: selectedNode.status === 'in-progress' ? '#f4a400' : '#fff',
+                  flexShrink: 0, padding: '12px 20px', borderBottom: '1px solid #1e1e22',
+                  background: '#09090b', display: 'flex', alignItems: 'center',
+                  justifyContent: 'space-between', gap: '8px',
                 }}>
-                  {selectedNode.status === 'completed' ? '✓' : '◉'}
+                  <button
+                    onClick={() => setStudyMode(false)}
+                    style={{
+                      background: 'none', border: 'none', color: '#71717a',
+                      fontFamily: "'Space Mono', monospace", fontSize: '11px',
+                      cursor: 'pointer', flexShrink: 0, padding: 0,
+                    }}
+                  >← Back</button>
+                  <span style={{
+                    fontFamily: "'Syne', sans-serif", fontWeight: '700', fontSize: '13px',
+                    color: '#f4f4f5', overflow: 'hidden', textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap', flex: 1, textAlign: 'center',
+                  }}>{selectedNode.label}</span>
+                  <span style={{
+                    background: '#161618', padding: '3px 8px',
+                    fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#22c55e',
+                    flexShrink: 0,
+                  }}>{checkedItems.size} / {selectedNode.resources.length} ✓</span>
+                </div>
+
+                {/* Scrollable resource feed */}
+                <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '40px' }}>
+
+                  {resourcesLoading && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '20px' }}>
+                      {[0, 1, 2].map(i => (
+                        <div key={i} className="glass-card" style={{ height: '64px' }} />
+                      ))}
+                    </div>
+                  )}
+
+                  {!resourcesLoading && !nodeResources && (
+                    <div style={{
+                      fontFamily: "'Space Mono', monospace", fontSize: '13px', color: '#52525b',
+                      padding: '32px 20px',
+                    }}>{'> No resources loaded. Close and reopen this node.'}</div>
+                  )}
+
+                  {!resourcesLoading && nodeResources && (
+                    <>
+                      {/* // WATCH */}
+                      {nodeResources.youtube?.length > 0 && (
+                        <>
+                          <div style={{
+                            position: 'sticky', top: 0, background: '#09090b', zIndex: 4,
+                            fontFamily: "'Space Mono', monospace", fontSize: '11px', color: '#4361ee',
+                            letterSpacing: '0.12em', padding: '20px 20px 10px',
+                          }}>{'// WATCH'}</div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '0 20px 20px' }}>
+                            {nodeResources.youtube.map((video, i) => (
+                              <div
+                                key={i}
+                                onClick={() => window.open(video.url, '_blank')}
+                                className="glass-card"
+                                style={{ cursor: 'pointer', overflow: 'hidden', transition: 'border-color 0.12s' }}
+                                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(67,97,238,0.4)' }}
+                                onMouseLeave={e => { e.currentTarget.style.borderColor = '' }}
+                              >
+                                <img
+                                  src={video.thumbnail}
+                                  alt={video.title}
+                                  style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block', borderRadius: '8px 8px 0 0' }}
+                                />
+                                <div style={{ padding: '10px 12px' }}>
+                                  <div style={{
+                                    fontFamily: "'Syne', sans-serif", fontSize: '13px', color: '#f4f4f5',
+                                    fontWeight: '600', marginBottom: '4px', lineHeight: '1.4',
+                                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                                  }}>{video.title}</div>
+                                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#71717a' }}>{video.channel}</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+
+                      {/* // CODE */}
+                      {nodeResources.github?.length > 0 && (
+                        <>
+                          <div style={{
+                            position: 'sticky', top: 0, background: '#09090b', zIndex: 4,
+                            fontFamily: "'Space Mono', monospace", fontSize: '11px', color: '#4361ee',
+                            letterSpacing: '0.12em', padding: '20px 20px 10px',
+                          }}>{'// CODE'}</div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '0 20px 20px' }}>
+                            {nodeResources.github.map((repo, i) => (
+                              <div
+                                key={i}
+                                onClick={() => window.open(repo.url, '_blank')}
+                                className="glass-card"
+                                style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', padding: '12px', cursor: 'pointer', transition: 'border-color 0.12s', gap: '8px' }}
+                                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(67,97,238,0.3)' }}
+                                onMouseLeave={e => { e.currentTarget.style.borderColor = '' }}
+                              >
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '12px', color: '#4361ee', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{repo.name}</div>
+                                  <div style={{
+                                    fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,0.5)',
+                                    lineHeight: '1.4', marginBottom: '4px',
+                                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                                  }}>{repo.description}</div>
+                                  {repo.language && (
+                                    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,0.3)' }}>{repo.language}</div>
+                                  )}
+                                </div>
+                                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '11px', color: '#f4a400', flexShrink: 0, alignSelf: 'flex-start' }}>
+                                  ⭐ {repo.stars.toLocaleString()}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+
+                      {/* // READ */}
+                      {((nodeResources.docs?.length > 0) || (nodeResources.guides?.length > 0)) && (
+                        <>
+                          <div style={{
+                            position: 'sticky', top: 0, background: '#09090b', zIndex: 4,
+                            fontFamily: "'Space Mono', monospace", fontSize: '11px', color: '#4361ee',
+                            letterSpacing: '0.12em', padding: '20px 20px 10px',
+                          }}>{'// READ'}</div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', padding: '0 20px 20px' }}>
+                            {[
+                              ...(nodeResources.docs   || []).map(d => ({ ...d, icon: '📄' })),
+                              ...(nodeResources.guides || []).map(g => ({ ...g, icon: '📖' })),
+                            ].map((item, i) => (
+                              <div
+                                key={i}
+                                onClick={() => window.open(item.url, '_blank')}
+                                style={{
+                                  display: 'flex', flexDirection: 'row', gap: '8px', padding: '8px',
+                                  cursor: 'pointer', borderRadius: '6px', transition: 'background 0.12s',
+                                  alignItems: 'center',
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+                              >
+                                <span style={{ fontSize: '14px', flexShrink: 0 }}>{item.icon}</span>
+                                <span style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '13px', color: '#f4f4f5', flex: 1 }}>{item.label}</span>
+                                <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,0.3)' }}>{item.type}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
-              <div>
-                <div style={{ fontFamily: "'DM Serif Display', serif", fontWeight: 400, fontSize: '18px', color: '#f4f4f5' }}>{selectedNode.label}</div>
-                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: selectedNode.status === 'in-progress' ? '#f4a400' : '#4361ee' }}>
-                  {selectedNode.status.toUpperCase().replace('-', ' ')} · {selectedNode.time}
-                </div>
-              </div>
-            </div>
-
-            <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '13px', color: '#a1a1aa', lineHeight: '1.65', marginBottom: '20px', padding: '14px', background: '#111113', border: '1px solid #1e1e22' }}>
-              {selectedNode.desc}
-            </div>
-
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '500', fontSize: '12px', color: '#f4f4f5', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Resources</div>
-              {selectedNode.resources.map((r, i) => (
-                <div key={i} style={{
-                  display: 'flex', alignItems: 'center', gap: '9px',
-                  padding: '9px 12px', marginBottom: '1px',
-                  background: '#111113', border: '1px solid #1e1e22',
-                  cursor: 'pointer', fontFamily: "'IBM Plex Sans', sans-serif",
-                  fontSize: '12px', color: '#a1a1aa', transition: 'border-color 0.12s, color 0.12s',
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(67,97,238,0.4)'; e.currentTarget.style.color = '#f4f4f5' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#1e1e22'; e.currentTarget.style.color = '#a1a1aa' }}
-                >
-                  <span style={{ color: '#4361ee', fontSize: '10px', flexShrink: 0 }}>▸</span>
-                  {r}
-                </div>
-              ))}
-            </div>
-
-            {selectedNode.status === 'locked' && (
-              <button onClick={startTopic} disabled={marking} style={{
-                width: '100%', padding: '11px', background: '#4361ee', border: 'none',
-                color: '#fff', fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600',
-                fontSize: '13px', cursor: 'pointer', transition: 'opacity 0.12s', opacity: marking ? 0.6 : 1,
-              }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
-                onMouseLeave={e => { if (!marking) e.currentTarget.style.opacity = '1' }}
-              >{marking ? 'Saving...' : 'Start Topic'}</button>
             )}
-            {selectedNode.status === 'in-progress' && (
-              <button onClick={markComplete} disabled={marking} style={{
-                width: '100%', padding: '11px',
-                background: 'rgba(244,164,0,0.08)', border: '1px solid rgba(244,164,0,0.35)',
-                color: '#f4a400', fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600',
-                fontSize: '13px', cursor: 'pointer', transition: 'opacity 0.12s', opacity: marking ? 0.6 : 1,
-              }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
-                onMouseLeave={e => { if (!marking) e.currentTarget.style.opacity = '1' }}
-              >{marking ? 'Saving...' : 'Mark as Complete'}</button>
-            )}
-            {selectedNode.status === 'completed' && (
-              <button disabled style={{
-                width: '100%', padding: '11px',
-                background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)',
-                color: '#22c55e', fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600',
-                fontSize: '13px', cursor: 'default',
-              }}>✓ Completed</button>
+
+            {/* Normal drawer content — hidden when boot or study mode active */}
+            {!studyMode && !bootSequence && (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                  <div style={{ filter: `drop-shadow(0 0 8px ${selectedNode.status === 'in-progress' ? 'rgba(244,164,0,0.7)' : 'rgba(67,97,238,0.7)'})` }}>
+                    <div style={{
+                      width: '44px', height: '44px',
+                      clipPath: 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
+                      background: selectedNode.status === 'in-progress' ? 'rgba(244,164,0,0.1)' : '#4361ee',
+                      border: selectedNode.status === 'in-progress' ? '2px solid #f4a400' : 'none',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '16px', color: selectedNode.status === 'in-progress' ? '#f4a400' : '#fff',
+                    }}>
+                      {selectedNode.status === 'completed' ? '✓' : '◉'}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: "'DM Serif Display', serif", fontWeight: 400, fontSize: '18px', color: '#f4f4f5' }}>{selectedNode.label}</div>
+                    <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: selectedNode.status === 'in-progress' ? '#f4a400' : '#4361ee' }}>
+                      {selectedNode.status.toUpperCase().replace('-', ' ')} · {selectedNode.time}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '13px', color: '#a1a1aa', lineHeight: '1.65', marginBottom: '20px', padding: '14px', background: '#111113', border: '1px solid #1e1e22' }}>
+                  {selectedNode.desc}
+                </div>
+
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '12px' }}>
+                    WHAT TO STUDY
+                  </div>
+                  {selectedNode.resources.map((r, i) => (
+                    <div
+                      key={i}
+                      onClick={() => setCheckedItems(prev => {
+                        const next = new Set(prev)
+                        if (next.has(r)) next.delete(r)
+                        else next.add(r)
+                        return next
+                      })}
+                      style={{
+                        display: 'flex', flexDirection: 'row', gap: '12px', alignItems: 'center',
+                        padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <span style={{ fontSize: '14px', flexShrink: 0, color: checkedItems.has(r) ? '#4361ee' : 'rgba(255,255,255,0.3)' }}>
+                        {checkedItems.has(r) ? '■' : '□'}
+                      </span>
+                      <span style={{
+                        fontFamily: "'IBM Plex Sans', sans-serif", fontSize: '13px',
+                        color: checkedItems.has(r) ? 'rgba(255,255,255,0.4)' : '#f4f4f5',
+                        textDecoration: checkedItems.has(r) ? 'line-through' : 'none',
+                      }}>{r}</span>
+                    </div>
+                  ))}
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginTop: '10px' }}>
+                    {selectedNode.resources.filter(r => checkedItems.has(r)).length} / {selectedNode.resources.length} completed
+                  </div>
+                </div>
+
+                {selectedNode.status === 'locked' && (
+                  <button onClick={handleStartTopic} disabled={marking} style={{
+                    width: '100%', padding: '11px', background: '#4361ee', border: 'none',
+                    color: '#fff', fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600',
+                    fontSize: '13px', cursor: 'pointer', transition: 'opacity 0.12s', opacity: marking ? 0.6 : 1,
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
+                    onMouseLeave={e => { if (!marking) e.currentTarget.style.opacity = '1' }}
+                  >{marking ? 'Saving...' : 'Start Topic'}</button>
+                )}
+                {selectedNode.status === 'in-progress' && (
+                  <button onClick={markComplete} disabled={marking} style={{
+                    width: '100%', padding: '11px',
+                    background: 'rgba(244,164,0,0.08)', border: '1px solid rgba(244,164,0,0.35)',
+                    color: '#f4a400', fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600',
+                    fontSize: '13px', cursor: 'pointer', transition: 'opacity 0.12s', opacity: marking ? 0.6 : 1,
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
+                    onMouseLeave={e => { if (!marking) e.currentTarget.style.opacity = '1' }}
+                  >{marking ? 'Saving...' : 'Mark as Complete'}</button>
+                )}
+                {selectedNode.status === 'completed' && (
+                  <button disabled style={{
+                    width: '100%', padding: '11px',
+                    background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.3)',
+                    color: '#22c55e', fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: '600',
+                    fontSize: '13px', cursor: 'default',
+                  }}>✓ Completed</button>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -878,15 +1259,15 @@ export default function Roadmap() {
       {toast && (
         <div className="animate-in" style={{
           position: 'fixed', bottom: '28px', left: '50%', transform: 'translateX(-50%)',
-          background: isRecalibratingToast ? 'rgba(67,97,238,0.08)' : 'rgba(34,197,94,0.08)',
-          border: isRecalibratingToast ? '1px solid rgba(67,97,238,0.3)' : '1px solid rgba(34,197,94,0.3)',
+          background: isRecalibratingToast ? 'rgba(67,97,238,0.08)' : isRemoveToast ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.08)',
+          border: isRecalibratingToast ? '1px solid rgba(67,97,238,0.3)' : isRemoveToast ? '1px solid rgba(239,68,68,0.3)' : '1px solid rgba(34,197,94,0.3)',
           padding: '10px 22px', zIndex: 500,
           display: 'flex', alignItems: 'center', gap: '8px',
           fontFamily: "'Space Mono', monospace", fontSize: '11px',
-          color: isRecalibratingToast ? '#4361ee' : '#22c55e',
+          color: isRecalibratingToast ? '#4361ee' : isRemoveToast ? '#ef4444' : '#22c55e',
           letterSpacing: '0.06em', whiteSpace: 'nowrap',
         }}>
-          <span>{isRecalibratingToast ? '◈' : '✓'}</span>
+          <span>{isRecalibratingToast ? '◈' : isRemoveToast ? '✕' : '✓'}</span>
           {toast.toUpperCase()}
         </div>
       )}

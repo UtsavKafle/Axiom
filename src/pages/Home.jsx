@@ -36,7 +36,9 @@ export default function Home() {
   const { user } = useAuth()
 
   const [tab, setTab] = useState('login')
-  const [terminalLine, setTerminalLine] = useState(0)
+  const [lineIdx, setLineIdx] = useState(0)
+  const [charIdx, setCharIdx] = useState(0)
+  const [typingDone, setTypingDone] = useState(false)
 
   // login state
   const [loginEmail, setLoginEmail] = useState('')
@@ -62,10 +64,23 @@ export default function Home() {
   }, [user, navigate])
 
   useEffect(() => {
-    if (terminalLine >= TERMINAL_LINES.length) return
-    const t = setTimeout(() => setTerminalLine(l => l + 1), 600)
+    if (typingDone) return
+    const currentLine = TERMINAL_LINES[lineIdx]
+    const isLastLine = lineIdx === TERMINAL_LINES.length - 1
+    const charDelay = isLastLine ? 30 : 18
+
+    if (charIdx < currentLine.length) {
+      const t = setTimeout(() => setCharIdx(c => c + 1), charDelay)
+      return () => clearTimeout(t)
+    }
+    // Line finished
+    if (isLastLine) {
+      const t = setTimeout(() => setTypingDone(true), 1000)
+      return () => clearTimeout(t)
+    }
+    const t = setTimeout(() => { setLineIdx(l => l + 1); setCharIdx(0) }, 900)
     return () => clearTimeout(t)
-  }, [terminalLine])
+  }, [lineIdx, charIdx, typingDone])
 
   async function handleLogin(e) {
     e.preventDefault()
@@ -268,19 +283,38 @@ export default function Home() {
                   <div key={c} style={{ width: '8px', height: '8px', borderRadius: '50%', background: c, opacity: 0.7 }} />
                 ))}
               </div>
-              {TERMINAL_LINES.slice(0, terminalLine).map((line, i) => (
-                <div key={i} style={{
-                  color: i === terminalLine - 1 ? '#e2e8f0' : '#64748b',
-                  marginBottom: '4px',
-                  lineHeight: 1.8,
-                  transition: 'color 0.3s',
-                }}>
-                  {line}
-                  {i === terminalLine - 1 && terminalLine < TERMINAL_LINES.length && (
-                    <span style={{ animation: 'pulseDot 1s infinite', display: 'inline-block', marginLeft: '2px', color: '#4361ee' }}>█</span>
-                  )}
-                </div>
-              ))}
+              {TERMINAL_LINES.map((line, i) => {
+                if (i > lineIdx) return null
+                const isActive   = i === lineIdx
+                const isLastLine = i === TERMINAL_LINES.length - 1
+                const displayText = isActive ? line.slice(0, charIdx) : line
+                const color = (typingDone && isLastLine)
+                  ? '#4361ee'
+                  : isActive
+                    ? '#4361ee'
+                    : 'rgba(255,255,255,0.7)'
+                const textShadow = (typingDone && isLastLine)
+                  ? '0 0 12px rgba(67,97,238,0.8)'
+                  : 'none'
+                return (
+                  <div key={i} style={{
+                    color,
+                    textShadow,
+                    marginBottom: '4px',
+                    lineHeight: 1.8,
+                    transition: 'color 0.15s',
+                  }}>
+                    {displayText}
+                    {isActive && !typingDone && (
+                      <span style={{
+                        display: 'inline-block',
+                        marginLeft: '1px',
+                        animation: 'blink 1s step-end infinite',
+                      }}>█</span>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
 
