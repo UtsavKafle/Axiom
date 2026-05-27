@@ -949,7 +949,7 @@ export default function Roadmap() {
                   <span style={{
                     background: '#161618', padding: '3px 8px',
                     fontFamily: "'Space Mono', monospace", fontSize: '10px', color: '#22c55e',
-                    flexShrink: 0,
+                    flexShrink: 0, marginRight: '44px',
                   }}>{checkedItems.size} / {selectedNode.resources.length} ✓</span>
                 </div>
 
@@ -973,6 +973,7 @@ export default function Roadmap() {
 
                   {!resourcesLoading && nodeResources && (
                     <>
+                      {console.log('[StudyMode] nodeResources.youtube:', nodeResources?.youtube)}
                       {/* // WATCH */}
                       {nodeResources.youtube?.length > 0 && (
                         <>
